@@ -8,9 +8,9 @@ Re-run on 2026-11-08: 37 tests with real Home Assistant Core 2026.10.4 and simul
 
 Coverage includes config/options flows, discovery, learning, timeout/cancellation, app lists, installation failure without uninstall, runtime actions, load/unload, gesture ownership/timing, timer cleanup, legacy single bindings, and volume hold/release. The five cover tests execute the actual example templates and verify the 50% lower boundary, stop/reverse, and invalid-state handling.
 
-Android GestureTracker has ten deterministic Java scenarios. Its current run result is recorded in release preparation/CI. The earlier APK build had verified v2/v3 signatures and the same signer as its predecessor; no INTERNET permission. The bundled SHA256 is recorded in assets/README.md and release checksums. Binary-reproducible builds have not been established.
+Android GestureTracker has ten deterministic Java scenarios; all ten passed again on 2026-11-08 with JDK 21. APK v2/v3 signatures, manifest versionCode 8/version 1.7, absence of INTERNET permission and the unchanged bundled SHA256 were rechecked. Earlier build verification confirmed the same signer as its predecessor. The bundled SHA256 is recorded in assets/README.md and release checksums. Binary-reproducible builds have not been established.
 
-HACS and hassfest are separate GitHub Actions checks. Their actual run results are available at the released commit; configuration of a workflow alone does not establish a passing result.
+HACS, hassfest and all software tests passed in [GitHub Actions validation](https://github.com/psychetainment-afk/ha-tv-sonos-remote-bridge/actions/runs/42472537852) on 2026-11-08. The initial validator findings (manifest key ordering, shared-package minimum version and missing repository topics) were corrected. Tag CI repeats these checks before publication. Package verification checked ZIP integrity, unique entry names, required source/build files, licence, bundled APK and SHA256SUMS.
 
 ## Hardware evidence / Hardwarebelege
 

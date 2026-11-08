@@ -10,11 +10,11 @@ Am Testaufbau sind 0.5.0/1.7 installiert. Nutzer bestätigt lokale App-Einzel-/L
 
 ## Prüfung
 
-Am 08.11. erneut 37 HA-/Gestentests mit Core 2026.10.4 und simuliertem ADB sowie zehn isolierte Leser-/Rollladentests bestanden. APK und passende Quellen vorhanden. HACS/hassfest werden im Veröffentlichungsworkflow gegen das tatsächliche Repository geprüft; ihr Ergebnis steht in GitHub Actions und wird vor dem Release kontrolliert.
+Am 08.11. erneut 37 HA-/Gestentests mit Core 2026.10.4 und simuliertem ADB, zehn isolierte Leser-/Rollladentests und zehn Java-Gestentests bestanden. APK-Signatur v2/v3, Manifest, unveränderte Prüfsumme, JSON/YAML, DE/EN-Schlüssel und lokale Doku-Dateilinks geprüft. HACS, hassfest und Softwaretests im [CI-Lauf](https://github.com/psychetainment-afk/ha-tv-sonos-remote-bridge/actions/runs/42472537852) erfolgreich. Paketstruktur, Lizenz, passende Quellen und Prüfsummen geprüft; Tag-CI prüft vor Veröffentlichung erneut.
 
 ## Offen und nächste Schritte
 
-Vollständige Hardwareprüfung für Doppel-/HA-Gesten, Zeitgrenzen, Lautstärke nach APK 1.7, Ausfall, Neustart und Rücknahme. Mehrere TV-Eingänge und TLS-Pairing sind nicht implementiert. Anleitungstitel bei nächstem APK-Build korrigieren, versionCode erhöhen und Signierer erhalten. Vor Veröffentlichung CI abschließen; allgemeine HACS-Standardliste separat beantragen.
+Vollständige Hardwareprüfung für Doppel-/HA-Gesten, Zeitgrenzen, Lautstärke nach APK 1.7, Ausfall, Neustart und Rücknahme. Mehrere TV-Eingänge und TLS-Pairing sind nicht implementiert. Anleitungstitel bei nächstem APK-Build korrigieren, versionCode erhöhen und Signierer erhalten. Nach grüner finaler CI v0.5.0 taggen; Tag-Workflow veröffentlicht den Vorabrelease. Allgemeine HACS-Standardliste separat beantragen.
 
 ## Relevante Dateien und letzte Änderung
 

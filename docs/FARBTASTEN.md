@@ -1,6 +1,6 @@
 # Tastenbelegung und Rohsignale
 
-Diese Seite dokumentiert den praktisch bestätigten persönlichen Aufbau 0.2.0/1.4 und dessen YAML-Beispiele. In der lokalen Entwicklungsversion 0.3.0/1.5 sind die Belegungen im HA-Browser änderbar; deren realer Hardwaretest steht noch aus. Nicht zugleich die Beispielautomation und eine identische direkte HA-Aktionsbelegung aktivieren.
+Diese Seite dokumentiert historische Gerätemessungen und optionale YAML-Beispiele aus 0.2.0/1.4. In 0.5.0/TV-App 1.7 sind Belegungen im HA-Browser frei änderbar; neue Installationen beginnen ohne diese Ziele. Aktueller Prüfstand: [PRUEFUNG.md](PRUEFUNG.md). Nicht zugleich eine Beispielautomation und eine identische direkte HA-Aktionsbelegung aktivieren.
 
 Prüfdatum: 7. November 2026. Der Nutzer drückte Rot, Grün, Gelb, Blau in dieser Reihenfolge; vier unterscheidbare DOWN/UP-Paare wurden erfasst.
 
@@ -13,7 +13,7 @@ Prüfdatum: 7. November 2026. Der Nutzer drückte Rot, Grün, Gelb, Blau in dies
 
 Das Gerät hieß bei der Messung `Xiaomi RC Consumer Control`, damals `/dev/input/event4`. Der Leser ermittelt die Nummer dynamisch. Die Linux-Bezeichnungen beschreiben Treibersignale; sie entsprechen nicht den aufgedruckten Farben. Für Blau wurden zusätzlich Android-Keycode 186 und Scan-Code 217 im App-Dienst gelesen. Andere Android-Codes wurden nicht einzeln als Messwerte protokolliert.
 
-Netflix wurde als Linux KEY_VIDEOPHONE/Scan-Code 416 erkannt; Xiaomi TV+ als Android-Keycode 192/Scan-Code 150. Beide führen in der APK zu Jellyfin.
+Netflix wurde als Linux KEY_VIDEOPHONE/Scan-Code 416 erkannt; Xiaomi TV+ als Android-Keycode 192/Scan-Code 150. Im damaligen Aufbau führten beide zu Jellyfin; die aktuelle APK enthält diese Ziele nicht als Standardbelegung.
 
 ## Grün: Bedienung wie ein Rollladentaster
 

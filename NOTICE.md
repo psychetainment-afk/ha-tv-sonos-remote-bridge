@@ -8,7 +8,7 @@ Runtime dependencies are installed separately by Home Assistant, not vendored in
 
 | Component | Role | Upstream licence/source |
 |---|---|---|
-| adb-shell 0.4.4 (async extra) | ADB connection in HA | [Apache-2.0](https://github.com/JeffLIrion/adb_shell/blob/v0.4.4/LICENSE) |
+| adb-shell >=0.4.4 (async extra; tested with 0.4.4) | ADB connection in HA | [Apache-2.0](https://github.com/JeffLIrion/adb_shell/blob/v0.4.4/LICENSE) |
 | Home Assistant | Host application/API | [Apache-2.0](https://github.com/home-assistant/core/blob/dev/LICENSE.md) |
 
 Transitive dependencies retain their upstream licences. Development-only tools (pytest, PyYAML, Jinja2 and Pillow for icon generation) are separately installed; their implementations are not included in the release. No third-party source files were identified in the reviewed Android sources. This records the checked distribution scope, not an independent legal audit.

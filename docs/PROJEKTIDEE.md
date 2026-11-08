@@ -6,6 +6,6 @@ Ausgangspunkt ist die optisch angeschlossene ältere Sonos Playbar: Audio funkti
 
 Die TV-App bleibt eine kleine Komponente ohne Netzwerkberechtigung. Lokale App-Belegungen funktionieren nach der Einrichtung auch ohne laufenden HA-Leser. Ein eigenständiges öffentliches Tastenmapper-Produkt ist zurückgestellt; keine parallele zweite Produktentwicklung.
 
-Lokale Entwicklung 0.3.0/1.5 vorhanden und isoliert geprüft; Produktivstand bleibt 0.2.0/1.4. Noch keine neue Hardwareprüfung, kein Remote und keine Veröffentlichung. GPL-3.0-only gewählt. Vor Veröffentlichung [Veröffentlichung](VEROEFFENTLICHUNG.md), vor Geräteänderungen [Migration](MIGRATION.md) beachten.
+Öffentlicher Kandidat 0.5.0/TV-App 1.7 unter GPL-3.0-only. Ziel ist das Repository psychetainment-afk/ha-tv-sonos-remote-bridge. Teilweise hardwaregeprüft, verbleibende Grenzen unter [Prüfung](PRUEFUNG.md). Releaseverfahren unter [Veröffentlichung](VEROEFFENTLICHUNG.md), Geräteänderungen nach [Migration](MIGRATION.md).
 
 Weitere Hersteller benötigen eigene Profile und Nachweise. Entwickleroptionen, ADB und TV-Freigaben können nicht durch HACS ersetzt werden. Ein Firmwarewechsel, Root oder eine Werbebereinigung gehören nicht zum Projektumfang.
