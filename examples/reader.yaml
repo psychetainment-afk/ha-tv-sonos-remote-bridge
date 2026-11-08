@@ -1,0 +1,5 @@
+tv_volume_bridge:
+  host: TV_IP_ADDRESS
+  port: 5555
+  target: media_player.YOUR_SONOS
+  device_name: Xiaomi RC Consumer Control

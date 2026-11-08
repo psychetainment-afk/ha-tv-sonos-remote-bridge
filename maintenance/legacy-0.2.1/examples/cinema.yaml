@@ -1,0 +1,24 @@
+automation:
+- id: tv_remote_tv_plus_cinema
+  alias: TV Fernbedienung - Xiaomi TV Plus Kino
+  mode: single
+  triggers:
+  - trigger: event
+    event_type: tv_volume_bridge_button
+    event_data:
+      button: tv_plus
+  actions:
+  - action: scene.turn_on
+    target:
+      entity_id: scene.tv_fernbedienung_kino
+    data:
+      transition: 2
+scene:
+- id: tv_remote_cinema_lights
+  name: TV Fernbedienung Kino
+  entities:
+    light.your_tv_backlight:
+      state: 'on'
+    light.your_spots:
+      state: 'on'
+      brightness: 51

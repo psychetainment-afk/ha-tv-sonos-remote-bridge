@@ -1,0 +1,195 @@
+{
+  "title": "TV Sonos Remote Bridge",
+  "config": {
+    "step": {
+      "user": {
+        "title": "TV verbinden",
+        "description": "Bisher zwei Fernbedienungen: Bluetooth für den TV und Infrarot nur für Lauter/Leiser der optisch angeschlossenen Sonos-Playbar. Diese Integration übernimmt Lautstärke mit der TV-Fernbedienung und ermöglicht TV-App-Ziele sowie HA-Aktionen. Praktisch getestet: Xiaomi MiTV-MOEU0, Android TV 14, Xiaomi RC Consumer Control und Sonos-Playbar. Andere Android-/Google-TVs sind noch nicht bestätigt; LG/webOS und Samsung/Tizen werden nicht unterstützt.\n\n**1. Am TV vorbereiten**\nTV eingeschaltet lassen. Einstellungen → System/Geräteeinstellungen → Info/Über → „Build“ bzw. „Android-TV-Betriebssystem-Build“ siebenmal mit OK bestätigen. Danach Entwickleroptionen öffnen. Menünamen unterscheiden sich je nach TV.\n\n**2. ADB im Heimnetz aktivieren**\nBeim getesteten Xiaomi: „Mi TV ADB Debugging“ einschalten; verlangten Neustart abwarten. Klassisches Netzwerk-ADB funktioniert über LAN oder WLAN, gewöhnlich Port 5555. „USB-Debugging“ allein garantiert keinen Netzwerkzugang. WLAN-Debugging mit Kopplungscode/TLS wird aktuell nicht unterstützt.\n\n**3. Home Assistant erlauben**\nTV-IP aus den Netzwerkeinstellungen unten eintragen. Beim Verbinden am TV „Von diesem Computer immer zulassen“ und „Zulassen“ wählen. Die Meldung kann auch über LAN „USB-Debugging zulassen?“ heißen. Keine Freigaben zurücksetzen.",
+        "data": {
+          "host": "TV-Adresse",
+          "port": "ADB-Port",
+          "target": "Lautstärkeziel"
+        }
+      },
+      "device": {
+        "title": "Fernbedienung auswählen",
+        "data": {
+          "device_name": "Eingabegerät",
+          "detect": "Per Tastendruck erkennen"
+        },
+        "description": "Empfohlen: „Per Tastendruck erkennen“ aktivieren und weitergehen. Danach erst auf Aufforderung kurz Leiser drücken. Alternativ manuell wählen. Die Liste enthält echte und virtuelle TV-Eingänge, keine geprüfte Kompatibilitätsliste. Ein Treffer gilt nur für diesen Eingang; andere Tasten können einen anderen Eingang verwenden."
+      },
+      "detect_start": {
+        "title": "Fernbedienung erkennen",
+        "description": "Nach „Weiter“ läuft die Erkennung 20 Sekunden. Dann einmal kurz **Leiser** drücken und loslassen. Keine HA-Aktion wird ausgeführt; der TV kann selbst auf die Taste reagieren. Bei fehlendem oder mehrdeutigem Signal bleibt die manuelle Auswahl möglich."
+      },
+      "detect": {
+        "title": "Jetzt kurz Leiser drücken"
+      },
+      "finish": {
+        "title": "Verbunden – so geht es weiter",
+        "description": "Nach dem Abschließen: **Einstellungen → Geräte & Dienste → TV Sonos Remote Bridge → Zahnrad/Konfigurieren**. Auf der Geräteseite führt auch „Konfiguration besuchen“ dorthin.\n\n1. „TV-App einrichten“ öffnen und Installation bewusst auswählen.\n2. Am TV die Bedienungshilfe **TV-Fernbedienungsbrücke** aktivieren.\n3. Zurück in HA „Taste lernen / Belegung ändern“ wählen.\n\nLautstärke funktioniert bereits ohne TV-App. „Verbunden – wartet auf Tasten“ ist der Verbindungsstatus, keine Tastendruckanzeige. Hilfe ist im Konfigurationsmenü jederzeit verfügbar."
+      }
+    },
+    "error": {
+      "invalid_host": "IP-Adresse oder Hostname ohne Port oder URL-Präfix eingeben.",
+      "cannot_connect": "Verbindung fehlgeschlagen. Klassisches ADB-TCP-Debugging am TV aktivieren, den Home-Assistant-Schlüssel am TV zulassen und erneut versuchen. WLAN-Kopplungscodes werden noch nicht unterstützt.",
+      "no_input_devices": "Keine lesbaren Eingabegeräte gefunden. Dieser TV erlaubt möglicherweise keinen Zugriff auf Rohtasten.",
+      "address_changed": "Bei einer neuen Adresse diesen Integrationseintrag entfernen und neu hinzufügen. Der ADB-Schlüssel bleibt erhalten.",
+      "no_key": "Keine Taste empfangen. Taste drücken, loslassen und bestätigen. Erfassung endet nach 60 Sekunden; Schritt gegebenenfalls neu öffnen.",
+      "protected_key": "Lautstärke und Ein/Aus sind reserviert. Andere Taste drücken.",
+      "invalid_package": "Android-Paketkennung eingeben, zum Beispiel org.jellyfin.androidtv.",
+      "empty_action": "Mindestens eine Home-Assistant-Aktion hinzufügen.",
+      "invalid_action": "Die Home-Assistant-Aktionsfolge ist ungültig.",
+      "helper_failed": "TV-App-Vorgang fehlgeschlagen. Zuerst die mitgelieferte App installieren und ADB freigeben. Bestehende App-Daten werden nie automatisch deinstalliert. Nach Wiederverbindung erneut versuchen.",
+      "detection_timeout": "Kein eindeutiges Leiser-Signal erkannt. Erkennung erneut starten oder Eingang manuell auswählen.",
+      "detection_ambiguous": "Mehrere Eingänge reagieren. Bitte Eingang manuell auswählen und einzeln testen."
+    },
+    "abort": {
+      "already_configured": "Dieser TV ist bereits eingerichtet.",
+      "legacy_yaml_active": "Der bisherige YAML-Leser ist aktiv. Für UI-Einrichtung zuerst gezielt migrieren; kein zweiter Leser wird gestartet.",
+      "not_running": "Der TV-Leser ist nicht verbunden. Verbindung prüfen und erneut öffnen.",
+      "no_bindings": "Keine Belegungen vorhanden."
+    },
+    "progress": {
+      "detecting": "Jetzt einmal Leiser drücken und loslassen. Maximal 20 Sekunden; danach erkannten Eingang bestätigen."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Fernbedienung einrichten",
+        "menu_options": {
+          "connection": "Verbindung und Lautstärkeziel",
+          "learn": "Taste lernen / Belegung ändern",
+          "remove": "Belegung entfernen",
+          "helper": "TV-App einrichten / Belegungen übertragen",
+          "guide": "Anleitung und getestete Geräte",
+          "detect_start": "Fernbedienung erneut erkennen"
+        },
+        "description": "Reihenfolge: TV-App einrichten → Bedienungshilfe am TV aktivieren → Taste lernen und Funktion auswählen. Lautstärke benötigt nur die ADB-Verbindung. Jederzeit mit × schließen; erst Speichern ändert Belegungen."
+      },
+      "connection": {
+        "title": "Verbindung",
+        "data": {
+          "host": "TV-Adresse",
+          "port": "ADB-Port",
+          "target": "Lautstärkeziel",
+          "device_name": "Eingabegerät"
+        }
+      },
+      "learn": {
+        "title": "Taste lernen",
+        "description": "Jetzt innerhalb von 60 Sekunden eine Taste drücken und loslassen, danach bestätigen. HA-Aktionen bleiben während der Erfassung aus; bestehende lokale TV-App-Aktionen können weiterhin starten. Bei unbekannten Geräten können auch deren Originalaktionen reagieren."
+      },
+      "binding": {
+        "title": "Taste {code} · {press}",
+        "description": "Wähle „TV-App öffnen“ und eine installierte App aus der Liste oder „Home-Assistant-Aktionen“ und die gewünschte Aktion. „HA-Ereignis“ ist für eigene Automationen. Die App-Liste benötigt TV-App 1.7; Paketnamen sind nur eine zusätzliche Experteneingabe. Speichern ersetzt die gesamte TV-App-Belegung. Die TV-Originalaktion wird nur unterdrückt, wenn Android die Taste an die Bedienungshilfe weitergibt. Die gewählte Druckart wird separat gespeichert. „Diese Druckart entfernen“ lässt andere Druckarten erhalten. Doppel-/Langdruck erfordert die aktuelle TV-App.",
+        "data": {
+          "name": "Name",
+          "kind": "Funktion",
+          "package": "Installierte Ziel-App (nur TV-App öffnen)",
+          "actions": "HA-Aktionen (nur action)"
+        }
+      },
+      "remove": {
+        "title": "Belegung entfernen",
+        "data": {
+          "code": "Taste"
+        }
+      },
+      "helper": {
+        "title": "TV-App",
+        "description": "Installation schreibt die mitgelieferte TV-App 1.7 auf den TV und öffnet sie. Anschließend dort die Bedienungshilfe aktivieren. Ohne Installationsauswahl werden nur Belegungen übertragen. Beides ersetzt die bisherige App-Belegung; ein Downgrade ist nicht garantiert. Bei Signaturkonflikt wird nie automatisch deinstalliert.",
+        "data": {
+          "install": "Mitgelieferte TV-App installieren/aktualisieren"
+        }
+      },
+      "guide": {
+        "title": "Anleitung jederzeit öffnen",
+        "description": "Bisher zwei Fernbedienungen: Bluetooth für den TV und Infrarot nur für Lauter/Leiser der optisch angeschlossenen Sonos-Playbar. Diese Integration übernimmt Lautstärke mit der TV-Fernbedienung und ermöglicht TV-App-Ziele sowie HA-Aktionen. Praktisch getestet: Xiaomi MiTV-MOEU0, Android TV 14, Xiaomi RC Consumer Control und Sonos-Playbar. Andere Android-/Google-TVs sind noch nicht bestätigt; LG/webOS und Samsung/Tizen werden nicht unterstützt.\n\n**1. Am TV vorbereiten**\nTV eingeschaltet lassen. Einstellungen → System/Geräteeinstellungen → Info/Über → „Build“ bzw. „Android-TV-Betriebssystem-Build“ siebenmal mit OK bestätigen. Danach Entwickleroptionen öffnen. Menünamen unterscheiden sich je nach TV.\n\n**2. ADB im Heimnetz aktivieren**\nBeim getesteten Xiaomi: „Mi TV ADB Debugging“ einschalten; verlangten Neustart abwarten. Klassisches Netzwerk-ADB funktioniert über LAN oder WLAN, gewöhnlich Port 5555. „USB-Debugging“ allein garantiert keinen Netzwerkzugang. WLAN-Debugging mit Kopplungscode/TLS wird aktuell nicht unterstützt.\n\n**3. Home Assistant erlauben**\nTV-IP aus den Netzwerkeinstellungen unten eintragen. Beim Verbinden am TV „Von diesem Computer immer zulassen“ und „Zulassen“ wählen. Die Meldung kann auch über LAN „USB-Debugging zulassen?“ heißen. Keine Freigaben zurücksetzen.\n\n**Danach:** „TV-App einrichten“ → Installation auswählen → am TV „Bedienungshilfen öffnen“ → TV-Fernbedienungsbrücke einschalten → mit Zurück zu HA wechseln → Taste lernen. Die TV-App kann im Hintergrund bleiben. Zum Abschalten am TV dieselbe Bedienungshilfe ausschalten; Lautstärke separat durch Deaktivieren der HA-Integration stoppen."
+      },
+      "helper_ready": {
+        "title": "Übertragen – jetzt am TV aktivieren",
+        "description": "Am TV: **Bedienungshilfen öffnen → TV-Fernbedienungsbrücke → Ein**, Freigabe bestätigen. Die TV-App danach mit Zurück verlassen; sie arbeitet im Hintergrund.\n\nDanach hier abschließen und im Konfigurationsmenü **Taste lernen / Belegung ändern** öffnen. Die App-Anleitung bleibt jederzeit über die TV-App und „Anleitung und getestete Geräte“ erreichbar."
+      },
+      "detect_start": {
+        "title": "Fernbedienung erkennen",
+        "description": "Nach „Weiter“ läuft die Erkennung 20 Sekunden. Dann einmal kurz **Leiser** drücken und loslassen. Keine HA-Aktion wird ausgeführt; der TV kann selbst auf die Taste reagieren. Bei fehlendem oder mehrdeutigem Signal bleibt die manuelle Auswahl möglich."
+      },
+      "detect": {
+        "title": "Jetzt kurz Leiser drücken"
+      },
+      "detect_result": {
+        "title": "Erkannten Eingang bestätigen",
+        "description": "Der bisherige Leser wurde nur für die Erkennung pausiert und läuft danach wieder. Erst Speichern übernimmt diesen Eingang. Leiser identifiziert den Lautstärkeeingang; andere Tasten können auf einem getrennten Eingang liegen. Bei fehlender Erkennung bleibt der bisherige Name erhalten.",
+        "data": {
+          "device_name": "Eingabegerät"
+        }
+      },
+      "press": {
+        "title": "Druckart auswählen",
+        "description": "Einzel-, Doppel- oder Langdruck getrennt belegen. Pro Taste entweder TV-Apps oder HA-Aktionen/Ereignisse; zum Wechsel alte Belegungen dieser Taste entfernen. Doppel: 350 ms nach Loslassen; lang: 750 ms halten. Einzel wartet bei aktivierter Doppel-/Langbelegung. Lautstärke-Halten bleibt unverändert. Erfordert TV-App 1.7.",
+        "data": {
+          "press": "Druckart"
+        }
+      }
+    },
+    "error": {
+      "invalid_host": "IP-Adresse oder Hostname ohne Port oder URL-Präfix eingeben.",
+      "cannot_connect": "Verbindung fehlgeschlagen. Klassisches ADB-TCP-Debugging am TV aktivieren, den Home-Assistant-Schlüssel am TV zulassen und erneut versuchen. WLAN-Kopplungscodes werden noch nicht unterstützt.",
+      "no_input_devices": "Keine lesbaren Eingabegeräte gefunden. Dieser TV erlaubt möglicherweise keinen Zugriff auf Rohtasten.",
+      "address_changed": "Bei einer neuen Adresse diesen Integrationseintrag entfernen und neu hinzufügen. Der ADB-Schlüssel bleibt erhalten.",
+      "no_key": "Keine Taste empfangen. Taste drücken, loslassen und bestätigen. Erfassung endet nach 60 Sekunden; Schritt gegebenenfalls neu öffnen.",
+      "protected_key": "Lautstärke und Ein/Aus sind reserviert. Andere Taste drücken.",
+      "invalid_package": "Android-Paketkennung eingeben, zum Beispiel org.jellyfin.androidtv.",
+      "empty_action": "Mindestens eine Home-Assistant-Aktion hinzufügen.",
+      "invalid_action": "Die Home-Assistant-Aktionsfolge ist ungültig.",
+      "helper_failed": "TV-App-Vorgang fehlgeschlagen. Zuerst die mitgelieferte App installieren und ADB freigeben. Bestehende App-Daten werden nie automatisch deinstalliert. Nach Wiederverbindung erneut versuchen.",
+      "app_list_unavailable": "App-Liste nicht verfügbar. TV eingeschaltet lassen und unter „TV-App einrichten“ App 1.7 installieren/aktualisieren. Danach diesen Schritt neu öffnen. HA-Aktionen und manuelle Paketnamen bleiben möglich.",
+      "detection_timeout": "Kein eindeutiges Leiser-Signal erkannt. Erkennung erneut starten oder Eingang manuell auswählen.",
+      "detection_ambiguous": "Mehrere Eingänge reagieren. Bitte Eingang manuell auswählen und einzeln testen.",
+      "mixed_gesture_targets": "Pro Taste entweder TV-Apps oder HA-Aktionen/Ereignisse. Entferne zuerst die anderen Belegungen dieser Taste."
+    },
+    "abort": {
+      "already_configured": "Dieser TV ist bereits eingerichtet.",
+      "legacy_yaml_active": "Der bisherige YAML-Leser ist aktiv. Für UI-Einrichtung zuerst gezielt migrieren; kein zweiter Leser wird gestartet.",
+      "not_running": "Der TV-Leser ist nicht verbunden. Verbindung prüfen und erneut öffnen.",
+      "no_bindings": "Keine Belegungen vorhanden."
+    },
+    "progress": {
+      "detecting": "Jetzt einmal Leiser drücken und loslassen. Maximal 20 Sekunden; danach erkannten Eingang bestätigen."
+    }
+  },
+  "selector": {
+    "binding_kind": {
+      "options": {
+        "event": "HA-Ereignis",
+        "action": "Home-Assistant-Aktionen",
+        "app": "TV-App öffnen",
+        "none": "Diese Druckart entfernen"
+      }
+    },
+    "press": {
+      "options": {
+        "single": "Einzeldruck",
+        "double": "Doppeldruck",
+        "long": "Langdruck"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "connection": {
+        "name": "Fernbedienungsverbindung",
+        "state": {
+          "listening": "Verbunden – wartet auf Tasten",
+          "connecting": "Verbindet",
+          "stopped": "Gestoppt",
+          "action_failed": "Aktion fehlgeschlagen",
+          "disconnected": "Getrennt – verbindet erneut"
+        }
+      }
+    }
+  }
+}

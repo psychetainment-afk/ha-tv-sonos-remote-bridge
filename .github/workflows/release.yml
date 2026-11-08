@@ -1,0 +1,51 @@
+name: Release preview
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: home-assistant/actions/hassfest@master
+  hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hacs/action@main
+        with:
+          category: integration
+          comment: false
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - run: python -m pip install -r requirements-ha-test.txt
+      - run: python tests/run.py
+      - run: python -m pytest -q
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: |
+          mkdir -p /tmp/tvbridge-classes
+          javac -encoding UTF-8 --release 8 -d /tmp/tvbridge-classes android/app/src/main/java/de/local/tvbridge/GestureTracker.java tests/GestureTrackerTest.java
+          java -cp /tmp/tvbridge-classes GestureTrackerTest
+  publish:
+    needs: [hassfest, hacs, tests]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package matching source and binaries
+        run: python scripts/package-release.py "$GITHUB_REF_NAME"
+      - name: Publish prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --verify-tag --prerelease --title "TV Sonos Remote Bridge $GITHUB_REF_NAME (preview)" --notes-file docs/RELEASE-NOTES.md

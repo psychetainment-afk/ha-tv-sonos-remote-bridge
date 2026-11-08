@@ -1,0 +1,84 @@
+input_boolean:
+  tv_remote_cover_next_open:
+    name: TV Rollladen naechste Fahrt nach oben
+    icon: mdi:arrow-up-down
+
+automation:
+  - id: tv_remote_blue_night_sound
+    alias: TV Fernbedienung - Blau Sonos Nachtton
+    mode: single
+    triggers:
+      - trigger: event
+        event_type: tv_volume_bridge_button
+        event_data:
+          button: blue
+    actions:
+      - action: switch.toggle
+        target:
+          entity_id: switch.YOUR_SONOS_NIGHT_SOUND
+
+  - id: tv_remote_yellow_hue_spots_off
+    alias: TV Fernbedienung - Gelb Hue Spots ein oder aus
+    mode: single
+    triggers:
+      - trigger: event
+        event_type: tv_volume_bridge_button
+        event_data:
+          button: yellow
+    actions:
+      - choose:
+          - conditions: "{{ is_state('light.YOUR_HUE_SPOTS', 'on') }}"
+            sequence:
+              - action: light.turn_off
+                target:
+                  entity_id: light.YOUR_HUE_SPOTS
+        default:
+          - action: light.turn_on
+            target:
+              entity_id: light.YOUR_HUE_SPOTS
+
+  - id: tv_remote_green_cover_position
+    alias: TV Fernbedienung - Gruen Rollladen Fahrt Stopp Gegenrichtung
+    mode: single
+    triggers:
+      - trigger: event
+        event_type: tv_volume_bridge_button
+        event_data:
+          button: green
+    conditions:
+      - condition: template
+        value_template: "{{ states('cover.YOUR_LIVING_ROOM_COVER') not in ['unavailable', 'unknown'] and state_attr('cover.YOUR_LIVING_ROOM_COVER', 'current_position') is number and states('input_boolean.tv_remote_cover_next_open') in ['on', 'off'] }}"
+    actions:
+      - choose:
+          - conditions: "{{ states('cover.YOUR_LIVING_ROOM_COVER') in ['opening', 'closing'] }}"
+            sequence:
+              - choose:
+                  - conditions: "{{ is_state('cover.YOUR_LIVING_ROOM_COVER', 'closing') }}"
+                    sequence:
+                      - action: input_boolean.turn_on
+                        target:
+                          entity_id: input_boolean.tv_remote_cover_next_open
+                default:
+                  - action: input_boolean.turn_off
+                    target:
+                      entity_id: input_boolean.tv_remote_cover_next_open
+              - action: cover.stop_cover
+                target:
+                  entity_id: cover.YOUR_LIVING_ROOM_COVER
+          - conditions: "{{ state_attr('cover.YOUR_LIVING_ROOM_COVER', 'current_position') | float <= 50 or (state_attr('cover.YOUR_LIVING_ROOM_COVER', 'current_position') | float < 100 and is_state('input_boolean.tv_remote_cover_next_open', 'on')) }}"
+            sequence:
+              - action: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.tv_remote_cover_next_open
+              - action: cover.open_cover
+                target:
+                  entity_id: cover.YOUR_LIVING_ROOM_COVER
+        default:
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.tv_remote_cover_next_open
+          - action: cover.set_cover_position
+            target:
+              entity_id: cover.YOUR_LIVING_ROOM_COVER
+            data:
+              position: 50

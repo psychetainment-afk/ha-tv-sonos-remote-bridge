@@ -1,0 +1,36 @@
+# Generated build and distribution files
+/build/
+/dist/
+*.apk
+!custom_components/tv_volume_bridge/assets/tvbridge.apk
+*.idsig
+*.aab
+*.class
+*.dex
+*.py[cod]
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+
+# Private runtime/signing configuration
+.env
+.env.*
+!.env.example
+bridge.env
+private-config.json
+local.properties
+*.keystore
+*.jks
+*.p12
+*.pem
+adbkey
+adbkey.pub
+.storage/
+state/
+
+# Editor and OS files
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store

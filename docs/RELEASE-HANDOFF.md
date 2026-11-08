@@ -1,0 +1,9 @@
+# Release checklist
+
+Target: https://github.com/psychetainment-afk/ha-tv-sonos-remote-bridge (public).
+
+Integration 0.5.0 / unchanged APK 1.7, GPL-3.0-only, first public prerelease. Metadata must name this target and @psychetainment-afk. Public documentation contains no private recovery paths or personal HA configuration.
+
+Before tagging: review intended files, dependency/licence notices, source-to-APK version and checksum, English/German installation, tests, and passing HACS/hassfest runs. Do not claim default-catalogue inclusion. Publish matching source archive with APK and integration package. Signing keys remain private.
+
+Release workflow revalidates the tag before creating a GitHub prerelease. No force-push. Verify remote commit/tag, CI result and downloaded asset checksums. Hardware limitations in README and PRUEFUNG remain part of the release.

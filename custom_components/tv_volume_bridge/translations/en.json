@@ -1,0 +1,195 @@
+{
+  "title": "TV Sonos Remote Bridge",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect TV",
+        "description": "Previously two remotes were needed: Bluetooth for the TV and infrared just for the optical Sonos Playbar volume. This integration uses the TV remote for volume, TV apps and Home Assistant actions. Physically tested: Xiaomi MiTV-MOEU0, Android TV 14, Xiaomi RC Consumer Control and Sonos Playbar. Other Android/Google TVs are unverified; LG/webOS and Samsung/Tizen are not supported.\n\n**1. Prepare the TV**\nKeep the TV on. Open Settings → System/Device preferences → About and press OK on Build/Android TV OS build seven times. Then open Developer options. Menu names vary by TV.\n\n**2. Enable ADB on your home network**\nOn the tested Xiaomi, enable Mi TV ADB Debugging and complete any requested restart. Classic network ADB works over Ethernet or Wi-Fi, usually port 5555. USB debugging alone does not guarantee network access. Wireless debugging with a pairing code/TLS is not supported yet.\n\n**3. Authorize Home Assistant**\nEnter the TV IP from its network settings below. When connecting, select Always allow from this computer and Allow on the TV. The prompt may say Allow USB debugging even over Ethernet. Do not reset existing authorizations.",
+        "data": {
+          "host": "TV address",
+          "port": "ADB port",
+          "target": "Volume target"
+        }
+      },
+      "device": {
+        "title": "Select remote input",
+        "data": {
+          "device_name": "Input device",
+          "detect": "Identify by key press"
+        },
+        "description": "Recommended: enable Identify by key press and continue, then press Volume Down only when prompted. Or select manually. These are actual and virtual TV inputs, not a compatibility list. A match identifies one input; other buttons may use another input."
+      },
+      "detect_start": {
+        "title": "Identify remote",
+        "description": "After Next, detection runs for 20 seconds. Briefly press and release **Volume Down**. No HA action runs; the TV itself may still react. Manual selection remains available if no unique signal is found."
+      },
+      "detect": {
+        "title": "Briefly press Volume Down now"
+      },
+      "finish": {
+        "title": "Connected — next steps",
+        "description": "After finishing: **Settings → Devices & services → TV Sonos Remote Bridge → cog/Configure**. Visit configuration on the device page also leads there.\n\n1. Open Set up TV app and deliberately choose installation.\n2. Enable the **TV-Fernbedienungsbrücke** accessibility service on the TV.\n3. Back in HA choose Learn / change button.\n\nVolume works without the TV app. Connected — waiting for buttons describes the connection, not individual presses. Help remains available in Configure."
+      }
+    },
+    "error": {
+      "invalid_host": "Enter an IP address or hostname without a port or URL prefix.",
+      "cannot_connect": "Connection failed. Enable classic ADB TCP debugging on the TV, accept the Home Assistant key and retry. Wireless pairing codes are not supported yet.",
+      "no_input_devices": "No readable input devices were found. This TV may restrict raw key access.",
+      "address_changed": "For a different address, remove this integration entry and add it again. The ADB key is retained.",
+      "no_key": "No key received. Press a key, release it, then submit. Capture expires after 60 seconds; reopen this step if needed.",
+      "protected_key": "Volume and power are reserved. Press another key.",
+      "invalid_package": "Enter an Android package identifier, for example org.jellyfin.androidtv.",
+      "empty_action": "Add at least one Home Assistant action.",
+      "invalid_action": "The Home Assistant action sequence is invalid.",
+      "helper_failed": "TV helper operation failed. Install the bundled helper first and authorize ADB. Existing app data is never automatically uninstalled. Try again after reconnecting.",
+      "detection_timeout": "No Volume Down signal detected. Retry or select an input manually.",
+      "detection_ambiguous": "Several inputs responded. Select manually and test individually."
+    },
+    "abort": {
+      "already_configured": "This TV is already configured.",
+      "legacy_yaml_active": "The legacy YAML reader is active. Migrate it before adding a UI entry; no second reader will start.",
+      "not_running": "The TV reader is not connected. Check the connection and reopen.",
+      "no_bindings": "There are no bindings."
+    },
+    "progress": {
+      "detecting": "Press and release Volume Down once. Up to 20 seconds; then confirm the detected input."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Set up remote",
+        "menu_options": {
+          "connection": "Connection and volume target",
+          "learn": "Learn key / change binding",
+          "remove": "Remove binding",
+          "helper": "Set up TV app / transfer bindings",
+          "guide": "Instructions and tested devices",
+          "detect_start": "Identify remote again"
+        },
+        "description": "Order: set up TV app → enable accessibility on TV → learn a button and select its function. Volume only needs ADB. Close with × at any time; bindings change only when saved."
+      },
+      "connection": {
+        "title": "Connection",
+        "data": {
+          "host": "TV address",
+          "port": "ADB port",
+          "target": "Volume target",
+          "device_name": "Input device"
+        }
+      },
+      "learn": {
+        "title": "Learn key",
+        "description": "Within 60 seconds, press and release a key, then submit. HA actions are suppressed while capturing; existing local TV app mappings and original TV actions may still run."
+      },
+      "binding": {
+        "title": "Key {code} · {press}",
+        "description": "Select Open TV app and an installed app, or Home Assistant actions and the desired action. HA event is for custom automations. The app list requires TV app 1.7; manual package names are an additional expert option. Saving replaces all TV app bindings. The original action is suppressed only if Android forwards the button to accessibility. Only the selected press binding is saved. Removing it preserves other press types. Double/long press requires the current TV app.",
+        "data": {
+          "name": "Name",
+          "kind": "Function",
+          "package": "Installed target app (Open TV app only)",
+          "actions": "HA actions (action only)"
+        }
+      },
+      "remove": {
+        "title": "Remove binding",
+        "data": {
+          "code": "Key"
+        }
+      },
+      "helper": {
+        "title": "TV helper",
+        "description": "Installation updates the TV app to bundled version 1.7 and opens it. Then enable accessibility on the TV. Without installation only bindings are transferred. Both replace existing app bindings; downgrade is not guaranteed. Signature conflicts never trigger automatic uninstall.",
+        "data": {
+          "install": "Install/update bundled TV helper"
+        }
+      },
+      "guide": {
+        "title": "Instructions",
+        "description": "Previously two remotes were needed: Bluetooth for the TV and infrared just for the optical Sonos Playbar volume. This integration uses the TV remote for volume, TV apps and Home Assistant actions. Physically tested: Xiaomi MiTV-MOEU0, Android TV 14, Xiaomi RC Consumer Control and Sonos Playbar. Other Android/Google TVs are unverified; LG/webOS and Samsung/Tizen are not supported.\n\n**1. Prepare the TV**\nKeep the TV on. Open Settings → System/Device preferences → About and press OK on Build/Android TV OS build seven times. Then open Developer options. Menu names vary by TV.\n\n**2. Enable ADB on your home network**\nOn the tested Xiaomi, enable Mi TV ADB Debugging and complete any requested restart. Classic network ADB works over Ethernet or Wi-Fi, usually port 5555. USB debugging alone does not guarantee network access. Wireless debugging with a pairing code/TLS is not supported yet.\n\n**3. Authorize Home Assistant**\nEnter the TV IP from its network settings below. When connecting, select Always allow from this computer and Allow on the TV. The prompt may say Allow USB debugging even over Ethernet. Do not reset existing authorizations.\n\n**Next:** Set up TV app → select installation → on TV open accessibility settings → enable TV-Fernbedienungsbrücke → return to HA → learn a button. The TV app can stay in the background. Disable its accessibility service to stop app remapping; disable the HA integration separately to stop volume control."
+      },
+      "helper_ready": {
+        "title": "Transferred — enable on TV",
+        "description": "On the TV: **Open accessibility settings → TV-Fernbedienungsbrücke → On**, confirm access. Press Back to leave the app; it works in the background.\n\nFinish here, then open **Learn / change button** in Configure. Instructions remain available in the TV app and Instructions and tested devices."
+      },
+      "detect_start": {
+        "title": "Identify remote",
+        "description": "After Next, detection runs for 20 seconds. Briefly press and release **Volume Down**. No HA action runs; the TV itself may still react. Manual selection remains available if no unique signal is found."
+      },
+      "detect": {
+        "title": "Briefly press Volume Down now"
+      },
+      "detect_result": {
+        "title": "Confirm detected input",
+        "description": "The existing reader was paused only for detection and resumes afterwards. Save to apply this input. Volume Down identifies the volume input; other buttons may use a different input. Failed detection preserves the previous name.",
+        "data": {
+          "device_name": "Input device"
+        }
+      },
+      "press": {
+        "title": "Choose press type",
+        "description": "Assign single, double or long press separately. Each key uses either TV apps or HA actions/events; remove old bindings on that key to change owner. Double: within 350 ms after release; long: hold 750 ms. Single waits when double/long is assigned. Volume hold is unchanged. Requires TV app 1.7.",
+        "data": {
+          "press": "Press type"
+        }
+      }
+    },
+    "error": {
+      "invalid_host": "Enter an IP address or hostname without a port or URL prefix.",
+      "cannot_connect": "Connection failed. Enable classic ADB TCP debugging on the TV, accept the Home Assistant key and retry. Wireless pairing codes are not supported yet.",
+      "no_input_devices": "No readable input devices were found. This TV may restrict raw key access.",
+      "address_changed": "For a different address, remove this integration entry and add it again. The ADB key is retained.",
+      "no_key": "No key received. Press a key, release it, then submit. Capture expires after 60 seconds; reopen this step if needed.",
+      "protected_key": "Volume and power are reserved. Press another key.",
+      "invalid_package": "Enter an Android package identifier, for example org.jellyfin.androidtv.",
+      "empty_action": "Add at least one Home Assistant action.",
+      "invalid_action": "The Home Assistant action sequence is invalid.",
+      "helper_failed": "TV helper operation failed. Install the bundled helper first and authorize ADB. Existing app data is never automatically uninstalled. Try again after reconnecting.",
+      "app_list_unavailable": "App list unavailable. Keep the TV on and install/update app 1.7 under Set up TV app, then reopen this step. HA actions and manual package names remain available.",
+      "detection_timeout": "No Volume Down signal detected. Retry or select an input manually.",
+      "detection_ambiguous": "Several inputs responded. Select manually and test individually.",
+      "mixed_gesture_targets": "A key uses either TV apps or HA actions/events. Remove its other bindings first."
+    },
+    "abort": {
+      "already_configured": "This TV is already configured.",
+      "legacy_yaml_active": "The legacy YAML reader is active. Migrate it before adding a UI entry; no second reader will start.",
+      "not_running": "The TV reader is not connected. Check the connection and reopen.",
+      "no_bindings": "There are no bindings."
+    },
+    "progress": {
+      "detecting": "Press and release Volume Down once. Up to 20 seconds; then confirm the detected input."
+    }
+  },
+  "selector": {
+    "binding_kind": {
+      "options": {
+        "event": "HA event",
+        "action": "Home Assistant actions",
+        "app": "Open TV app",
+        "none": "Remove this press binding"
+      }
+    },
+    "press": {
+      "options": {
+        "single": "Single press",
+        "double": "Double press",
+        "long": "Long press"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "connection": {
+        "name": "Remote connection",
+        "state": {
+          "listening": "Connected — waiting for buttons",
+          "connecting": "Connecting",
+          "stopped": "Stopped",
+          "action_failed": "Action failed",
+          "disconnected": "Disconnected — reconnecting"
+        }
+      }
+    }
+  }
+}
