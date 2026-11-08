@@ -21,7 +21,6 @@ with zipfile.ZipFile(dist / ("tv-sonos-remote-bridge-" + version + ".zip"), "w",
     for path in sorted(component.rglob("*")):
         if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc":
             archive.write(path, path.relative_to(component.parent))
-    archive.write(root / "LICENSE", "tv_volume_bridge/LICENSE")
     archive.write(root / "NOTICE.md", "tv_volume_bridge/NOTICE.md")
 subprocess.run(["git", "archive", "--format=zip", "--prefix=ha-tv-sonos-remote-bridge-" + version + "/", "-o", str(dist / ("ha-tv-sonos-remote-bridge-" + version + "-source.zip")), "HEAD"], cwd=root, check=True)
 files = sorted(dist.glob("*.zip")) + [apk]
