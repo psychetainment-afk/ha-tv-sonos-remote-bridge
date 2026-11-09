@@ -99,7 +99,7 @@ async def test_detection_never_opens_stream_with_existing_reader(hass):
 
 @pytest.mark.asyncio
 async def test_binding_shows_installed_app_selector_and_preserves_choice(hass):
-    flow,runtime=options_flow(hass); flow._code='416'
+    flow,runtime=options_flow(hass); flow._code='416'; flow._kind='app'
     runtime.installed_apps=AsyncMock(return_value=[{'value':'org.jellyfin.androidtv','label':'Jellyfin'}])
     result=await flow.async_step_binding()
     assert not result['errors']

@@ -4,7 +4,7 @@
 
 ## English
 
-Integration **0.5.0** / TV app **1.7 (versionCode 8)**, preview release. Read the [hardware evidence and open tests](PRUEFUNG.md) first. For an existing installation, follow [migration and rollback](MIGRATION.md); never run two readers against the same remote.
+Local patch **0.5.1** / TV app **1.7.1 (versionCode 9)**, installed on the personal test setup, no new tagged release. Public prerelease remains 0.5.0 / 1.7. Read the [hardware evidence and open tests](PRUEFUNG.md) first. For an existing installation, follow [migration and rollback](MIGRATION.md); never run two readers against the same remote.
 
 ### 1. Prepare the TV
 
@@ -33,7 +33,7 @@ Options remain available at **Settings → Devices & services → TV Sonos Remot
 
 ### 4. Install and enable the companion TV app
 
-In the options dialog choose TV-app setup / transfer assignments. Explicitly select installation/update of the bundled APK. This installs APK 1.7 and opens its help screen; its cosmetic title still says 1.6. On the TV enable **Accessibility → TV remote bridge**, approve the request, return to HA, and finish the confirmation step.
+In the options dialog choose TV-app setup / transfer assignments. Explicitly select installation/update of the bundled APK. The local patch installs APK 1.7.1 and opens its help screen, whose version comes from the package metadata. On the TV enable **Accessibility → TV remote bridge**, approve the request, return to HA, and finish the confirmation step.
 
 Without installation selected, the dialog only transfers mappings. Transfers replace TV-app mappings. A signer conflict aborts; the integration never automatically uninstalls. A downgrade is not guaranteed. Local app targets require the accessibility service; volume can work with the HA reader without the TV app.
 
@@ -54,7 +54,7 @@ Local app targets work on the TV after configuration without HA. Volume and HA a
 
 # Einrichtung in Home Assistant
 
-Vorabversion **0.5.0 / TV-App 1.7**. Teilweise hardwaregeprüft; genaue Belege und offene Prüfungen unter [Prüfstand](PRUEFUNG.md). Für einen bestehenden Aufbau zuerst [Migration](MIGRATION.md) beachten: gezielter Rückweg, alten Leser stoppen, niemals zwei Leser gleichzeitig.
+Lokaler Patch **0.5.1 / TV-App 1.7.1**, am eigenen Testaufbau installiert, ohne neuen getaggten Release; öffentlicher Vorabrelease weiterhin **0.5.0 / 1.7**. Teilweise hardwaregeprüft; genaue Belege und offene Prüfungen unter [Prüfstand](PRUEFUNG.md). Für einen bestehenden Aufbau zuerst [Migration](MIGRATION.md) beachten: gezielter Rückweg, alten Leser stoppen, niemals zwei Leser gleichzeitig.
 
 ## Wofür ist die Brücke da?
 
@@ -99,7 +99,7 @@ Im Menü bleibt **„Anleitung und getestete Geräte“** jederzeit verfügbar. 
 ## 5. TV-App einrichten
 
 1. **TV-App einrichten / Belegungen übertragen** öffnen.
-2. **Mitgelieferte TV-App installieren/aktualisieren** bewusst aktivieren. Dies schreibt APK 1.7 auf den TV und öffnet die App. Ohne Häkchen werden nur Belegungen übertragen.
+2. **Mitgelieferte TV-App installieren/aktualisieren** bewusst aktivieren. Dies schreibt beim lokalen Patch APK 1.7.1 auf den TV und öffnet die App. Ohne Häkchen werden nur Belegungen übertragen.
 3. Am TV **Bedienungshilfen öffnen → TV-Fernbedienungsbrücke → Ein** wählen und die Freigabe bestätigen. Je nach TV liegen Bedienungshilfen unter System oder Geräteeinstellungen.
 4. Mit Zurück die TV-App verlassen und in HA den Bestätigungsschritt abschließen. Die App arbeitet im Hintergrund. Ihre Anleitung bleibt beim erneuten Öffnen verfügbar, auch nach Aktivierung des Dienstes.
 
@@ -109,10 +109,10 @@ Installation und reine Übertragung ersetzen die bisherigen TV-App-Belegungen. E
 
 1. **Taste lernen / Belegung ändern** öffnen.
 2. Innerhalb von 60 Sekunden die gewünschte Taste einmal drücken und loslassen, dann bestätigen. Die numerische Erkennung ist automatisch; kein Code muss nachgeschlagen werden. HA-Aktionen sind während des Lernens unterdrückt; bestehende TV-App-/Originalaktionen können trotzdem starten.
-3. Namen und Funktion wählen:
-   - **TV-App öffnen:** installierte startbare App anhand ihres lesbaren Namens auswählen; Paketkennung wird intern verwendet. System-Apps ohne startbare Oberfläche fehlen absichtlich. Manuelle Paketkennung ist nur eine Expertenoption.
-   - **Home-Assistant-Aktionen:** im Aktionseditor gewünschte Aktion(en) auswählen.
-   - **HA-Ereignis:** für eigene Automationen; diese dürfen nicht dieselbe Aktion nochmals auslösen.
+3. Druckart auswählen, dann Funktion und Weiter:
+   - **HA-Aktion direkt ausführen:** Befehl auswählen (z. B. Licht umschalten oder Szene aktivieren), danach passende Ziel-Entitäten und Bezeichnung. Für Helligkeit, mehrere Befehle, Geräte oder Bereiche die erweiterte Aktionsfolge wählen.
+   - **TV-App öffnen:** anschließend nur Ziel-App und Bezeichnung.
+   - **HA-Ereignis für eigene Automation:** anschließend nur Bezeichnung; meldet `tv_volume_bridge_button`, schaltet selbst nichts. Eine eigene Ereignis-Automation übernimmt die Wirkung. Auch direkte Aktionen senden dieses Ereignis: keine doppelte Wirkung konfigurieren.
 4. Speichern, dann reale Wirkung einmal prüfen. Bei App-Zielen muss die gewünschte App öffnen, ohne zusätzliche Originalaktion. Bei Doppelaktion Belegung entfernen.
 
 **Belegung entfernen** gibt eine Taste wieder frei. Lautstärke und Power sind reserviert. Vorhandene Farbtasten-Automationen bleiben bei Migration erhalten; dieselbe Aktion nicht zusätzlich im neuen Editor anlegen. Bewegung von Rollläden nur unter Sichtkontrolle testen; bestehende 50-%-Grenze erhalten.
@@ -131,3 +131,9 @@ Quellen für allgemeine Schritte: [Android-Entwickleroptionen](https://developer
 Vor Mehrfachbelegungen die gebündelte TV-App 1.7 über den vorhandenen Installationsweg aktualisieren und Bedienungshilfe prüfen. Alte Apps werden bei der Übertragung vor Änderungen erkannt. Im HA-Optionsmenü „Taste lernen / Belegung ändern“: Taste drücken und loslassen, bestätigen, Einzel-/Doppel-/Langdruck auswählen, Ziel speichern. Für weitere Druckarten dieselbe Taste erneut lernen. Nur die gewählte Druckart wird ersetzt; „Diese Druckart entfernen“ erhält andere Druckarten, „Belegung entfernen“ löscht die ganze Taste.
 
 Pro Taste entweder TV-App-Ziele oder HA-Aktionen/Ereignisse verwenden. Zum Wechsel zwischen App und HA zunächst die ganze Taste entfernen. Für Doppel-/Langdruck unterschiedliche Ziele zuweisen und am TV testen. Zweiter kurzer Druck innerhalb von 350 ms nach Loslassen ergibt Doppel; 750 ms halten ergibt einmal Lang. Einzeldruck wartet bei aktivierter Doppel-/Langbelegung auf die Entscheidung. Ein lang gehaltener zweiter Druck ergibt Lang statt Doppel. Lautstärke-Halten bleibt unabhängig. Konkrete Firmwaregrenzen und offene Hardwareprüfung unter ARCHITECTURE.md und PRUEFUNG.md.
+
+## Lautstärke im lokalen Patch 0.5.1 / Volume in local patch 0.5.1
+
+Unter „Verbindung und Lautstärkeziel“ Schrittweite **1** für einen Prozentpunkt wählen; **0** erhält den bisherigen Gerätestandard (Sonos zwei Punkte), **2–10** erlauben größere Schritte. Voreinstellung ist jetzt **1**, auch bei bestehenden Einträgen ohne explizite Option; 0 bleibt optionaler Gerätestandard. Ein Geräteziel mit `volume_set` und aktuellem `volume_level` ist erforderlich; bei fehlender Rückmeldung wird nicht auf gröbere Schritte ausgewichen. Sonos kann nur ganze Stufen 0–100, somit keine Zwischenstufe unter 1.
+
+The TV bar is independent of the selected HA volume target. Use its HA media-player volume or connection sensor attributes for reported volume and mute. Detailed causes, exact event payload, logging recipe and test limits: [Review](REVIEW-2026-11-09.md).

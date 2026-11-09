@@ -26,13 +26,13 @@ Das Buildskript erwartet das Keystore-Passwort nur über die Prozess-Umgebungsva
   -KeyAlias 'tvbridge'
 ```
 
-Das Skript erzeugt pro Lauf ein eigenes Verzeichnis unter `build/`, kompiliert Java, erstellt DEX, richtet die APK aus, signiert sie und prüft anschließend ihre Signatur. Ergebnis: `dist/tv-sonos-remote-bridge-1.7.apk`. Beide Verzeichnisse sind in Git ignoriert. Relative Werkzeugpfade werden vor dem Build absolut aufgelöst.
+Das Skript erzeugt pro Lauf ein eigenes Verzeichnis unter `build/`, kompiliert Java, erstellt DEX, richtet die APK aus, signiert sie und prüft anschließend ihre Signatur. Ergebnis: `dist/tv-sonos-remote-bridge-1.7.1.apk`. Beide Verzeichnisse sind in Git ignoriert. Relative Werkzeugpfade werden vor dem Build absolut aufgelöst.
 
 Für das Komplettpaket die geprüfte APK anschließend als `custom_components/tv_volume_bridge/assets/tvbridge.apk` übernehmen. Nur diese bewusst gebündelte APK ist vom allgemeinen APK-Git-Ausschluss ausgenommen; Quellcode, Lizenz und Buildanleitung werden mitgeliefert. SHA256-Prüfsumme im Paket vermerken. Der Build installiert die App nicht.
 
 ## Update und Installation
 
-Eine bereits installierte APK akzeptiert ein Update nur bei passendem Signierschlüssel. Ein eigener fremd signierter Neubau ersetzt die vorhandene App daher nicht automatisch. Öffentliche APK-Updates behalten den bestehenden Projektsignierer; geänderte Neubauten erhöhen versionCode. Signierschlüssel bleiben privat. Unverändert veröffentlichte APK 1.7 enthält den bekannten kosmetischen Anleitungstitel 1.6.
+Eine bereits installierte APK akzeptiert ein Update nur bei passendem Signierschlüssel. Ein eigener fremd signierter Neubau ersetzt die vorhandene App daher nicht automatisch. Öffentliche APK-Updates behalten den bestehenden Projektsignierer; geänderte Neubauten erhöhen versionCode. Signierschlüssel bleiben privat. APK 1.7.1 / versionCode 9 liest den Anleitungstitel aus der installierten Paketversion; der frühere fest codierte Titel 1.6 ist korrigiert.
 
 Installation und TV-Freigaben stehen in [INSTALLATION.md](INSTALLATION.md). Private Schlüssel und ein eventuell gesetztes Passwort nach dem Build nicht in Logs oder das Repository übernehmen.
 

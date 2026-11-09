@@ -1,6 +1,6 @@
 # Test evidence / Prüfstand
 
-Stand: 2026-11-08. Integration 0.5.0 / APK 1.7 (versionCode 8).
+Stand: 2026-11-09. Lokaler Patch 0.5.1 / APK 1.7.1 (versionCode 9), am eigenen Testaufbau installiert, noch nicht veröffentlicht. Aktuelle 44 HA-, zehn isolierte Leser- und zehn Android-Gestenprüfungen sowie APK-/Signaturprüfung bestanden; Details und offene Hardwaremessung im [Review](REVIEW-2026-11-09.md). Die folgenden älteren Nachweise beziehen sich ausdrücklich auf 0.5.0 / 1.7 und Vorgänger.
 
 ## Automated checks / Automatisierte Prüfungen
 
@@ -24,6 +24,6 @@ On the tested Xiaomi, our accessibility service did not receive volume keys. And
 
 ## Known limitations / Grenzen
 
-Classic ADB TCP/RSA only; no TLS pairing. No automatic combination of multiple input devices. Each button has one gesture owner (TV app or HA), no app/HA mixing on that button. TV firmware may retain original button actions. APK 1.7 help title still says 1.6. Downgrade/restore and unattended long-term operation are not guaranteed or fully tested. No independent security audit has been completed.
+Classic ADB TCP/RSA only; no TLS pairing. No automatic combination of multiple input devices. Each button has one gesture owner (TV app or HA), no app/HA mixing on that button. TV firmware may retain original button actions. Historical APK 1.7 help title says 1.6; corrected in local 1.7.1. Downgrade/restore and unattended long-term operation are not guaranteed or fully tested. No independent security audit has been completed.
 
 Full remaining procedure: [HARDWARETEST.md](HARDWARETEST.md). Sources and commands: [BUILD.md](BUILD.md), [BUILD-EN.md](BUILD-EN.md), tests/ and GitHub Actions.

@@ -113,7 +113,7 @@ async def test_flow_preserves_single_and_rejects_mixed_owner(hass):
     runtime.maintenance = maintenance
     with patch("custom_components.tv_volume_bridge.config_flow.sync_helper", new=AsyncMock()) as sync:
         form = await flow.async_step_press({"press": "double"})
-        assert form["step_id"] == "binding"
+        assert form["step_id"] == "function"
         result = await flow.async_step_binding({"name": "Double", "kind": "app", "package": "org.example.two"})
         binding = result["data"]["bindings"]["416"]
         assert binding["package"] == "org.example.one"

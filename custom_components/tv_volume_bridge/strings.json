@@ -75,22 +75,14 @@
           "host": "TV address",
           "port": "ADB port",
           "target": "Volume target",
-          "device_name": "Input device"
-        }
+          "device_name": "Input device",
+          "volume_step": "Step in percentage points (0 = device default, 1 = fine)"
+        },
+        "description": "1 sets absolute volume in one-percentage-point steps; 0 retains native stepping. Sonos defaults to 2 and supports a minimum step of 1; levels below Sonos level 1 are unavailable. The TV bar shows its own output, not Sonos volume. The target entity and connection sensor attributes show reported volume and mute state."
       },
       "learn": {
         "title": "Learn key",
         "description": "Within 60 seconds, press and release a key, then submit. HA actions are suppressed while capturing; existing local TV app mappings and original TV actions may still run."
-      },
-      "binding": {
-        "title": "Key {code} · {press}",
-        "description": "Select Open TV app and an installed app, or Home Assistant actions and the desired action. HA event is for custom automations. The app list requires TV app 1.7; manual package names are an additional expert option. Saving replaces all TV app bindings. The original action is suppressed only if Android forwards the button to accessibility. Only the selected press binding is saved. Removing it preserves other press types. Double/long press requires the current TV app.",
-        "data": {
-          "name": "Name",
-          "kind": "Function",
-          "package": "Installed target app (Open TV app only)",
-          "actions": "HA actions (action only)"
-        }
       },
       "remove": {
         "title": "Remove binding",
@@ -100,7 +92,7 @@
       },
       "helper": {
         "title": "TV helper",
-        "description": "Installation updates the TV app to bundled version 1.7 and opens it. Then enable accessibility on the TV. Without installation only bindings are transferred. Both replace existing app bindings; downgrade is not guaranteed. Signature conflicts never trigger automatic uninstall.",
+        "description": "Installation updates the TV app to bundled version 1.7.1 and opens it. Then enable accessibility on the TV. Without installation only bindings are transferred. Both replace existing app bindings; downgrade is not guaranteed. Signature conflicts never trigger automatic uninstall.",
         "data": {
           "install": "Install/update bundled TV helper"
         }
@@ -133,6 +125,58 @@
         "data": {
           "press": "Press type"
         }
+      },
+      "function": {
+        "title": "Choose function",
+        "description": "HA action executes a command on a selected entity, such as toggling a light or activating a scene. HA event only reports the press; a separate automation must react to it. TV app opens a local app. Next shows only the relevant fields.",
+        "data": {
+          "kind": "Function"
+        }
+      },
+      "action": {
+        "title": "Choose action",
+        "description": "Choose an action, then select its target entity on the next screen. For brightness, multiple actions, devices, areas or YAML choose Advanced action sequence. Existing actions default to the sequence editor to preserve all parameters.",
+        "data": {
+          "action": "Action"
+        }
+      },
+      "binding_event": {
+        "title": "Key {code} · {press}",
+        "description": "Only emits `{event}` with `button` = name, `scan_code` = {code}, `press` = {press}, and `entry_id`. No entity is controlled. Create a separate event-triggered automation, or choose HA action for direct control.",
+        "data": {
+          "name": "Press name"
+        }
+      },
+      "binding_action": {
+        "title": "Key {code} · {press}",
+        "description": "Key {code} ({press}) directly runs **{action}** on the target entities selected below. A button event is also emitted: avoid a second automation performing the same action. Saving transfers all bindings.",
+        "data": {
+          "name": "Press name",
+          "entity_id": "Target entities"
+        }
+      },
+      "binding_app": {
+        "title": "Key {code} · {press}",
+        "description": "Opens the selected TV app locally. Saving transfers all bindings. Keep TV on and accessibility enabled; original TV actions can only be suppressed for keys delivered to the service.",
+        "data": {
+          "name": "Press name",
+          "package": "Target app"
+        }
+      },
+      "binding_none": {
+        "title": "Remove binding",
+        "description": "Removes only {press} for key {code}; other press types are retained.",
+        "data": {
+          "name": "Press name"
+        }
+      },
+      "binding_sequence": {
+        "title": "Key {code} · {press}",
+        "description": "This sequence runs directly on key {code} ({press}). Choose an action and its target inside the editor; parameters such as brightness are available there. A button event is also emitted: avoid a second automation performing the same action. Saving transfers all bindings.",
+        "data": {
+          "name": "Press name",
+          "actions": "Action sequence"
+        }
       }
     },
     "error": {
@@ -146,7 +190,7 @@
       "empty_action": "Add at least one Home Assistant action.",
       "invalid_action": "The Home Assistant action sequence is invalid.",
       "helper_failed": "TV helper operation failed. Install the bundled helper first and authorize ADB. Existing app data is never automatically uninstalled. Try again after reconnecting.",
-      "app_list_unavailable": "App list unavailable. Keep the TV on and install/update app 1.7 under Set up TV app, then reopen this step. HA actions and manual package names remain available.",
+      "app_list_unavailable": "App list unavailable. Keep the TV on and install/update app 1.7.1 under Set up TV app, then reopen this step. HA actions and manual package names remain available.",
       "detection_timeout": "No Volume Down signal detected. Retry or select an input manually.",
       "detection_ambiguous": "Several inputs responded. Select manually and test individually.",
       "mixed_gesture_targets": "A key uses either TV apps or HA actions/events. Remove its other bindings first."
@@ -164,8 +208,8 @@
   "selector": {
     "binding_kind": {
       "options": {
-        "event": "HA event",
-        "action": "Home Assistant actions",
+        "event": "HA event for custom automation",
+        "action": "Run HA action directly",
         "app": "Open TV app",
         "none": "Remove this press binding"
       }
@@ -175,6 +219,24 @@
         "single": "Single press",
         "double": "Double press",
         "long": "Long press"
+      }
+    },
+    "direct_action": {
+      "options": {
+        "sequence": "Advanced action sequence (parameters, devices, areas, YAML)",
+        "light.turn_on": "light: turn on / activate",
+        "light.turn_off": "light: turn off",
+        "light.toggle": "light: toggle",
+        "switch.turn_on": "switch: turn on / activate",
+        "switch.turn_off": "switch: turn off",
+        "switch.toggle": "switch: toggle",
+        "scene.turn_on": "scene: turn on / activate",
+        "script.turn_on": "script: turn on / activate",
+        "cover.open_cover": "cover: open",
+        "cover.close_cover": "cover: close",
+        "cover.stop_cover": "cover: stop",
+        "media_player.media_play_pause": "media_player: play / pause",
+        "media_player.media_stop": "media_player: stop"
       }
     }
   },

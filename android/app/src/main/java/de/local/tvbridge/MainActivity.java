@@ -17,7 +17,10 @@ public class MainActivity extends Activity {
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(56, 48, 56, 48);
         TextView info = new TextView(this);
-        info.setText("TV-Fernbedienungsbrücke 1.6\n\n1. „Bedienungshilfen öffnen“ wählen.\n2. TV-Fernbedienungsbrücke auswählen, einschalten und Freigabe bestätigen.\n3. Danach mit Zurück wechseln. In Home Assistant: Einstellungen → Geräte & Dienste → TV Sonos Remote Bridge → Zahnrad/Konfigurieren → Taste lernen / Belegung ändern.\n4. Taste drücken, loslassen, bestätigen und Ziel-App oder HA-Aktion auswählen.\n\nDiese Anleitung bleibt hier auch nach dem Aktivieren erreichbar. Die App arbeitet im Hintergrund. Für Lautstärke bleiben TV-ADB und Home Assistant erforderlich.\n\nZum Abschalten: Bedienungshilfen → TV-Fernbedienungsbrücke → Aus. Dadurch enden lokale Tastenumleitungen; HA-Lautstärke separat in HA deaktivieren.\n\nKein Bildschirmzugriff, keine Werbung, keine Cloud.");
+        String version;
+        try { version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName; }
+        catch (android.content.pm.PackageManager.NameNotFoundException e) { throw new IllegalStateException(e); }
+        info.setText("TV-Fernbedienungsbrücke " + version + "\n\n1. „Bedienungshilfen öffnen“ wählen.\n2. TV-Fernbedienungsbrücke auswählen, einschalten und Freigabe bestätigen.\n3. Danach mit Zurück wechseln. In Home Assistant: Einstellungen → Geräte & Dienste → TV Sonos Remote Bridge → Zahnrad/Konfigurieren → Taste lernen / Belegung ändern.\n4. Taste drücken, loslassen, bestätigen und Ziel-App oder HA-Aktion auswählen.\n\nDiese Anleitung bleibt hier auch nach dem Aktivieren erreichbar. Die App arbeitet im Hintergrund. Für Lautstärke bleiben TV-ADB und Home Assistant erforderlich.\n\nZum Abschalten: Bedienungshilfen → TV-Fernbedienungsbrücke → Aus. Dadurch enden lokale Tastenumleitungen; HA-Lautstärke separat in HA deaktivieren.\n\nKein Bildschirmzugriff, keine Werbung, keine Cloud.");
         info.setTextSize(22);
 
         Button settings = new Button(this);

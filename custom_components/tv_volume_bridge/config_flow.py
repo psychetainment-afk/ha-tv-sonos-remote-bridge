@@ -186,6 +186,8 @@ class OptionsFlow(config_entries.OptionsFlow):
         errors = {}
         schema = connection_schema(self.config).extend({
             vol.Required("device_name", default=self.config["device_name"]): str})
+        schema = schema.extend({vol.Required("volume_step", default=self.config.get("volume_step", 1)):
+            vol.All(vol.Coerce(int), vol.Range(min=0, max=10))})
         if user_input:
             # Address changes require a fresh integration so unique IDs stay accurate.
             if (user_input["host"], user_input["port"]) != (self.config["host"], self.config["port"]):
@@ -217,22 +219,62 @@ class OptionsFlow(config_entries.OptionsFlow):
     async def async_step_press(self, user_input=None):
         if user_input is not None:
             self._press = user_input["press"]
-            return await self.async_step_binding()
+            return await self.async_step_function()
         return self.async_show_form(step_id="press", data_schema=vol.Schema({
             vol.Required("press", default="single"): selector.SelectSelector(
                 selector.SelectSelectorConfig(options=list(PRESSES), translation_key="press"))}))
+
+    async def async_step_function(self, user_input=None):
+        """Submit the function first: HA forms do not reactively hide fields."""
+        old = gestures(self.config["bindings"].get(self._code, {})).get(self._press, {})
+        if user_input is not None:
+            self._kind = user_input["kind"]
+            self._direct_action = None
+            if self._kind == "action":
+                return await self.async_step_action()
+            return await self.async_step_binding()
+        return self.async_show_form(step_id="function", data_schema=vol.Schema({
+            vol.Required("kind", default=old.get("kind", "action")): selector.SelectSelector(
+                selector.SelectSelectorConfig(options=["action", "event", "app", "none"], translation_key="binding_kind"))}))
+
+    async def async_step_action(self, user_input=None):
+        """Simple actions get a fresh domain-filtered target selector on first render."""
+        supported = [f"{domain}.{service}" for domain, services in {
+            "light": ("turn_on", "turn_off", "toggle"),
+            "switch": ("turn_on", "turn_off", "toggle"),
+            "scene": ("turn_on",), "script": ("turn_on",),
+            "cover": ("open_cover", "close_cover", "stop_cover"),
+            "media_player": ("media_play_pause", "media_stop"),
+        }.items() for service in services if self.hass.services.has_service(domain, service)]
+        if user_input is not None:
+            if user_input["action"] not in supported + ["sequence"]:
+                return await self.async_step_action()
+            self._direct_action = None if user_input["action"] == "sequence" else user_input["action"]
+            return await self.async_step_binding()
+        return self.async_show_form(step_id="action", data_schema=vol.Schema({
+            vol.Required("action", default="sequence" if gestures(self.config["bindings"].get(self._code, {})).get(self._press, {}).get("actions") else (supported[0] if supported else "sequence")): selector.SelectSelector(
+                selector.SelectSelectorConfig(options=supported + ["sequence"], translation_key="direct_action"))}))
 
     async def async_step_binding(self, user_input=None):
         errors = {}
         if user_input:
             user_input = dict(user_input)
+            # Function-specific steps never persist hidden fields from another function.
+            user_input.setdefault("kind", getattr(self, "_kind", "event"))
+            if user_input["kind"] == "action" and getattr(self, "_direct_action", None):
+                user_input["actions"] = [{"action": self._direct_action,
+                    "target": {"entity_id": user_input.pop("entity_id", [])}}]
+            user_input = {key: value for key, value in user_input.items()
+                          if key in {"name", "kind", "press"} or
+                          (key == "package" and user_input["kind"] == "app") or
+                          (key == "actions" and user_input["kind"] == "action")}
             press = user_input.pop("press", getattr(self, "_press", "single"))
             self._press = press
             kind = user_input["kind"]
             if kind == "app" and not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+", user_input.get("package", "")):
                 errors["package"] = "invalid_package"
-            elif kind == "action" and not user_input.get("actions"):
-                errors["actions"] = "empty_action"
+            elif kind == "action" and (not user_input.get("actions") or (getattr(self, "_direct_action", None) and not user_input["actions"][0]["target"]["entity_id"])):
+                errors["entity_id" if getattr(self, "_direct_action", None) else "actions"] = "empty_action"
             else:
                 if kind == "action":
                     try:
@@ -270,28 +312,52 @@ class OptionsFlow(config_entries.OptionsFlow):
                         errors["base"] = "helper_failed"
                     else:
                         return self.async_create_entry(title="", data={**self.config_entry.options, "bindings": bindings})
-        if getattr(self, "_apps", None) is None:
+        press = getattr(self, "_press", "single")
+        old = user_input or gestures(self.config["bindings"].get(self._code, {})).get(press, {})
+        kind = getattr(self, "_kind", old.get("kind", "event"))
+        if kind == "app" and getattr(self, "_apps", None) is None:
             self._apps = []
             try:
                 self._apps = await self.runtime.installed_apps()
             except Exception:
                 pass
-        if not self._apps and not errors:
+        if kind == "app" and not self._apps and not errors:
             errors["base"] = "app_list_unavailable"
-        press = getattr(self, "_press", "single")
-        old = user_input or gestures(self.config["bindings"].get(self._code, {})).get(press, {})
-        apps = list(self._apps)
+        apps = list(getattr(self, "_apps", None) or [])
         if old.get("package") and not any(app["value"] == old["package"] for app in apps):
             apps.append({"value": old["package"], "label": old["package"]})
-        return self.async_show_form(step_id="binding", description_placeholders={"code": self._code, "press": press},
-            data_schema=vol.Schema({
-                vol.Required("name", default=old.get("name", f"Key {self._code}")): str,
-                vol.Required("kind", default=old.get("kind", "event")): selector.SelectSelector(
-                    selector.SelectSelectorConfig(options=["event", "action", "app", "none"], translation_key="binding_kind")),
-                vol.Optional("package", description={"suggested_value": old.get("package", "")}): selector.SelectSelector(
-                    selector.SelectSelectorConfig(options=apps, custom_value=True, mode="dropdown")),
-                vol.Optional("actions", default=old.get("actions", [])): selector.ActionSelector(),
-            }), errors=errors)
+        fields = {vol.Required("name", default=old.get("name", f"Key {self._code}")): str}
+        if kind == "app":
+            fields[vol.Required("package", description={"suggested_value": old.get("package", "")})] = selector.SelectSelector(
+                selector.SelectSelectorConfig(options=apps, custom_value=True, mode="dropdown"))
+        elif kind == "action":
+            if action := getattr(self, "_direct_action", None):
+                old_actions = old.get("actions", [])
+                target = old_actions[0].get("target", {}).get("entity_id", []) if old_actions and old_actions[0].get("action") == action else []
+                fields[vol.Required("entity_id", description={"suggested_value": target})] = selector.EntitySelector(
+                    selector.EntitySelectorConfig(domain=action.split(".")[0], multiple=True))
+            else:
+                fields[vol.Required("actions", default=old.get("actions", []))] = selector.ActionSelector()
+        step = "binding_sequence" if kind == "action" and not getattr(self, "_direct_action", None) else "binding_" + kind
+        return self.async_show_form(step_id=step,
+            description_placeholders={"code": self._code, "press": press,
+                "action": getattr(self, "_direct_action", None) or "", "event": "tv_volume_bridge_button"},
+            data_schema=vol.Schema(fields), errors=errors)
+
+    async def async_step_binding_app(self, user_input=None):
+        return await self.async_step_binding(user_input)
+
+    async def async_step_binding_action(self, user_input=None):
+        return await self.async_step_binding(user_input)
+
+    async def async_step_binding_sequence(self, user_input=None):
+        return await self.async_step_binding(user_input)
+
+    async def async_step_binding_event(self, user_input=None):
+        return await self.async_step_binding(user_input)
+
+    async def async_step_binding_none(self, user_input=None):
+        return await self.async_step_binding(user_input)
 
     async def async_step_remove(self, user_input=None):
         bindings = deepcopy(self.config["bindings"])

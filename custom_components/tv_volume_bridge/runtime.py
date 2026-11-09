@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import asyncio
+import logging
+import math
 from contextlib import asynccontextmanager
 
 from homeassistant.helpers.dispatcher import async_dispatcher_send
@@ -12,6 +14,8 @@ from .adb import connection, list_apps
 from .const import DOMAIN, EVENT_BUTTON
 from .reader import VolumeReader
 from .gestures import GestureEngine, gestures, validate_owner
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class Runtime:
@@ -25,6 +29,8 @@ class Runtime:
         self._learn_timer = None
         self._discard_until = 0.0
         self.lock = asyncio.Lock()
+        self._volume_lock = asyncio.Lock()
+        self.last_volume_command = None
         self._stopping = False
         self.gestures = GestureEngine(self._gesture)
         self.scripts = {}
@@ -85,12 +91,54 @@ class Runtime:
         self._discard_until = asyncio.get_running_loop().time() + 1
 
     async def send(self, direction):
+        async with self._volume_lock:
+            await self._send_volume(direction)
+
+    async def _send_volume(self, direction):
+        if direction not in ("up", "down"):
+            raise ValueError("invalid_volume_direction")
         target = self.config["target"]
         state = self.hass.states.get(target)
         if state is None or state.state in ("unknown", "unavailable"):
             raise RuntimeError("target_unavailable")
-        await self.hass.services.async_call(
-            "media_player", f"volume_{direction}", {"entity_id": target}, blocking=True)
+        step = self.config.get("volume_step", 1)
+        before = state.attributes.get("volume_level")
+        requested = None
+        service = f"volume_{direction}"
+        data = {"entity_id": target}
+        if step:
+            from homeassistant.components.media_player import MediaPlayerEntityFeature
+            if not state.attributes.get("supported_features", 0) & MediaPlayerEntityFeature.VOLUME_SET:
+                raise RuntimeError("volume_set_unsupported")
+            if not isinstance(before, (int, float)) or not math.isfinite(before) or not 0 <= before <= 1:
+                raise RuntimeError("volume_level_unavailable")
+            requested = round(max(0, min(1, before + (step / 100 if direction == "up" else -step / 100))), 4)
+            if requested == before:
+                return
+            service = "volume_set"
+            data["volume_level"] = requested
+        self.last_volume_command = {"direction": direction, "service": service,
+                                    "before": before, "requested": requested}
+        _LOGGER.debug("Volume target=%s direction=%s service=%s before=%s requested=%s",
+                      target, direction, service, before, requested)
+        try:
+            await self.hass.services.async_call("media_player", service, data, blocking=True)
+            if requested is not None:
+                # Do not stack absolute commands on stale state or invent a displayed level.
+                async with asyncio.timeout(1.5):
+                    while True:
+                        current = self.hass.states.get(target)
+                        actual = current.attributes.get("volume_level") if current else None
+                        if isinstance(actual, (int, float)) and abs(actual - requested) < .0001:
+                            break
+                        await asyncio.sleep(.05)
+        finally:
+            current = self.hass.states.get(target)
+            self.last_volume_command["reported"] = current.attributes.get("volume_level") if current else None
+            self.last_volume_command["muted"] = current.attributes.get("is_volume_muted") if current else None
+            _LOGGER.debug("Volume reported=%s muted=%s", self.last_volume_command["reported"],
+                          self.last_volume_command["muted"])
+        self.status("listening")
 
     def _gesture(self, code, press):
         self.entry.async_create_background_task(

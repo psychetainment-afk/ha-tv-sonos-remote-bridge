@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import sys
 import zipfile
+import xml.etree.ElementTree as ET
 
 root = Path(__file__).resolve().parents[1]
 tag = sys.argv[1]
@@ -15,7 +16,9 @@ if tag != "v" + version:
 dist = root / "dist"
 dist.mkdir(exist_ok=True)
 component = root / "custom_components/tv_volume_bridge"
-apk = dist / "tv-sonos-remote-bridge-1.7.apk"
+app_version = ET.parse(root / "android/app/src/main/AndroidManifest.xml").getroot().get(
+    "{http://schemas.android.com/apk/res/android}versionName")
+apk = dist / f"tv-sonos-remote-bridge-{app_version}.apk"
 shutil.copyfile(component / "assets/tvbridge.apk", apk)
 with zipfile.ZipFile(dist / ("tv-sonos-remote-bridge-" + version + ".zip"), "w", zipfile.ZIP_DEFLATED) as archive:
     for path in sorted(component.rglob("*")):

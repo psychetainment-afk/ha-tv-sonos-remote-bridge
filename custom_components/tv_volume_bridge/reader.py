@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from collections.abc import Awaitable, Callable
 from contextlib import suppress
 import re
@@ -16,6 +17,7 @@ _COLORS = {"KEY_EJECTCD": "green", "KEY_SHUFFLE": "yellow", "KEY_SEARCH": "blue"
 _CODES = {"KEY_VOLUMEUP": 115, "KEY_VOLUMEDOWN": 114, "KEY_EJECTCD": 161,
           "KEY_SHUFFLE": 410, "KEY_SEARCH": 217, "KEY_VIDEOPHONE": 416,
           "KEY_WWW": 150, "KEY_STOPCD": 166}
+_LOGGER = logging.getLogger(__name__)
 
 
 def parse_key(line):
@@ -44,6 +46,7 @@ class VolumeReader:
         self._task = None
         self._repeat_task = None
         self._generation = 0
+        self._volume_direction = None
         self._closed = False
         self.sent = 0
         self.last_error = None
@@ -64,6 +67,7 @@ class VolumeReader:
         self.status("stopped")
 
     async def _cancel_repeat(self):
+        self._volume_direction = None
         self._generation += 1
         if self._repeat_task:
             self._repeat_task.cancel()
@@ -130,11 +134,15 @@ class VolumeReader:
             return
         direction = "up" if match.group(1) == "KEY_VOLUMEUP" else "down"
         action = match.group(2)
+        _LOGGER.debug("Volume key direction=%s action=%s", direction, action)
         if action == "DOWN":
+            if self._volume_direction == direction:
+                return
             await self._cancel_repeat()
+            self._volume_direction = direction
             await self._send_once(direction)
             self._repeat_task = asyncio.create_task(self._repeat(direction, self._generation))
-        elif action == "UP":
+        elif action == "UP" and self._volume_direction == direction:
             await self._cancel_repeat()
 
     async def _run(self):

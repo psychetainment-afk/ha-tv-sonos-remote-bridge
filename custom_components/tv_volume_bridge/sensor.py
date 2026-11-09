@@ -1,6 +1,7 @@
 """Local reader status, without host address or key material."""
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import EntityCategory
+from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
 from .const import DOMAIN
@@ -34,8 +35,19 @@ class ReaderStatus(SensorEntity):
 
     @property
     def extra_state_attributes(self):
-        return {"last_scan_code": self.runtime.last_key}
+        state = self.hass.states.get(self.runtime.config["target"])
+        return {"last_scan_code": self.runtime.last_key,
+                "volume_target": self.runtime.config["target"],
+                "volume_level": state.attributes.get("volume_level") if state else None,
+                "is_volume_muted": state.attributes.get("is_volume_muted") if state else None}
 
     async def async_added_to_hass(self):
+        from homeassistant.helpers.event import async_track_state_change_event
+        @callback
+        def target_changed(event):
+            self.async_write_ha_state()
+
+        self.async_on_remove(async_track_state_change_event(
+            self.hass, [self.runtime.config["target"]], target_changed))
         self.async_on_remove(async_dispatcher_connect(
             self.hass, self.runtime.signal, self.async_write_ha_state))

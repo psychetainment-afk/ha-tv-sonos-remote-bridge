@@ -1,23 +1,21 @@
 # Projektstand
 
-Stand: 2026-11-08. Öffentliches Repository: https://github.com/psychetainment-afk/ha-tv-sonos-remote-bridge.
+Stand: 2026-11-09. Repository: https://github.com/psychetainment-afk/ha-tv-sonos-remote-bridge.
 
 ## Zustand
 
-Integration 0.5.0, TV-App 1.7/versionCode 8. GPL-3.0-only. [v0.5.0 als erster öffentlicher Vorabrelease veröffentlicht](https://github.com/psychetainment-afk/ha-tv-sonos-remote-bridge/releases/tag/v0.5.0), Tag-Commit 4b2ad7b4691c8dabf94f6725b3997e66d018e506. APK, Integration, passendes Quellarchiv und SHA256SUMS vorhanden. Die APK bleibt unverändert; ihr Anleitungstitel nennt irrtümlich 1.6.
-
-Am Testaufbau sind 0.5.0/1.7 installiert. Nutzer bestätigt lokale App-Einzel-/Langbelegung Jellyfin/Twitch. Lautstärke kurz/halten/loslassen und Altbelegungen wurden mit HA 0.5.0/alter APK 1.6 bestätigt; nach APK-Update keine erneute ausdrückliche Lautstärkeprüfung. Keine allgemeine Gerätekompatibilität ableiten.
+**0.5.1 / TV-App 1.7.1 (versionCode 9) am persönlichen Testaufbau installiert**, nach Nutzerbestätigung zum Push freigegeben; kein neuer Release. Lautstärke-Voreinstellung jetzt **ein Prozentpunkt**, auch für bestehende Einträge ohne explizite Option. Funktionsabhängige HA-Belegungsdialoge und korrigierter Versionstitel enthalten. Öffentlicher Vorabrelease weiterhin 0.5.0 / 1.7. Gespeicherte Tastenbelegungen und Optionen unverändert.
 
 ## Prüfung
 
-Am 08.11. erneut 37 HA-/Gestentests mit Core 2026.10.4 und simuliertem ADB, zehn isolierte Leser-/Rollladentests und zehn Java-Gestentests bestanden. APK-Signatur v2/v3, Manifest, unveränderte Prüfsumme, JSON/YAML, DE/EN-Schlüssel und lokale Doku-Dateilinks geprüft. HACS, hassfest und Softwaretests am Tag-Commit im [CI-Lauf](https://github.com/psychetainment-afk/ha-tv-sonos-remote-bridge/actions/runs/42472827447) und erneut im [Release-Workflow](https://github.com/psychetainment-afk/ha-tv-sonos-remote-bridge/actions/runs/42472934722) erfolgreich; Veröffentlichungsschritt ebenfalls erfolgreich. Paketstruktur, Lizenz, passende Quellen und Prüfsummen geprüft. Keine produktive HA-/TV-Änderung während der Veröffentlichung.
+Private Sicherung von Komponentenordner, Bridge-Eintrag und TV-APK. 17 Komponentendateien SHA256-geprüft, ha core check erfolgreich, regulärer HA-Neustart abgeschlossen, HTTP 200. APK 1.7.1/9, aktivierte Bedienungshilfe und genau ein getevent-Leser nachgelesen. Verbindungssensor nach Neustart listening mit neuen Pegelattributen (Recorder). Keine Lautstärke-/Licht-/Rollladenaktion durch Codex. Auf Nutzerwunsch keine erneute große Testreihe; frühere Patchprüfung: 44 HA-, zehn Leser-/Rollladen- und zehn Java-Gestentests. [Review und Installationsnachtrag](REVIEW-2026-11-09.md).
 
-## Offen und nächste Schritte
+## Offen und nächster Schritt
 
-Vollständige Hardwareprüfung für Doppel-/HA-Gesten, Zeitgrenzen, Lautstärke nach APK 1.7, Ausfall, Neustart und Rücknahme. Mehrere TV-Eingänge und TLS-Pairing sind nicht implementiert. Anleitungstitel bei nächstem APK-Build korrigieren, versionCode erhöhen und Signierer erhalten. Installation über ein benutzerdefiniertes HACS-Repository an einem frischen Aufbau separat praktisch prüfen; allgemeine HACS-Standardliste separat beantragen.
+Nutzer bestätigt die direkte HA-Belegung als funktionierend; Beschriftung weiterhin etwas unklar. Damit ist die zuvor bedingte Push-Freigabe erfüllt. Lautstärke-Einerschritte installiert, keine zusätzliche ausdrückliche physische Lautstärkebestätigung ableiten. Sporadischer Android-100-%-/Mute-Fall weiterhin nicht abschließend reproduziert; Sonos unterstützt keine Zwischenstufe unter 1. Keine weitere Diagnose-/Testausweitung ohne Anlass. Kein neuer HACS-/hassfest-Lauf oder Release.
 
 ## Relevante Dateien und letzte Änderung
 
-README.md; docs/INSTALLATION.md; docs/PRUEFUNG.md; docs/HARDWARETEST.md; docs/BUILD.md; docs/BUILD-EN.md; NOTICE.md; .github/workflows/validate.yml; .github/workflows/release.yml; custom_components/tv_volume_bridge/manifest.json.
+custom_components/tv_volume_bridge/{config_flow,runtime,reader,sensor,diagnostics}.py; Android MainActivity/Manifest; tests/test_review.py; docs/REVIEW-2026-11-09.md; docs/INSTALLATION.md.
 
-Letzte Änderung: erfolgreichen öffentlichen Vorabrelease und CI-Nachweise eingetragen. Private Rückwegdaten bleiben außerhalb des Repositories. Nächster Chatumfang: gezielte verbleibende Hardware-/HACS-Installationsprüfung oder nächster APK-Patch.
+Letzte Änderung: lokales HA-/TV-Update und Einerschritt-Voreinstellung aktiviert, Wiederanlauf und unveränderte Belegungen geprüft; direkte HA-Belegung vom Nutzer bestätigt; getesteten Stand zum Push freigegeben.

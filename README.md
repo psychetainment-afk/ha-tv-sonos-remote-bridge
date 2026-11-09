@@ -49,13 +49,13 @@ This is a **custom HACS repository**, not an entry in the HACS default catalogue
 
 ### Preview release and known limits
 
-Integration **0.5.0**, bundled TV app **1.7 / versionCode 8**, GPL-3.0-only. This first public release is a **prerelease**.
+Local patch **0.5.1**, bundled TV app **1.7.1 / versionCode 9**, GPL-3.0-only. Installed on the personal test setup; no new tagged release. Public prerelease remains **0.5.0 / 1.7**.
 
-The version pair has been installed on the test setup. App single/long press (Jellyfin/Twitch) was confirmed by the user on real hardware. Volume short/hold/release was confirmed with HA 0.5.0 and the previous APK 1.6; it has not been explicitly rechecked after installing APK 1.7. Double press, HA gestures, precise timing boundaries, outage/restart recovery, and rollback remain incompletely tested on hardware. Automated tests use simulated ADB and do not replace these checks.
+The previous 0.5.0 / 1.7 pair has been installed on the test setup. App single/long press (Jellyfin/Twitch) was confirmed by the user on real hardware. Volume short/hold/release was confirmed with HA 0.5.0 and the previous APK 1.6; it has not been explicitly rechecked after installing APK 1.7. Double press, HA gestures, precise timing boundaries, outage/restart recovery, and rollback remain incompletely tested on hardware. Automated tests use simulated ADB and do not replace these checks.
 
 Double press uses a 350 ms window after release; long press fires once after 750 ms. Single actions may wait when a double/long target is configured. Power and volume are reserved. Buttons on multiple input devices are not automatically combined. Local app targets work without HA after configuration; volume and HA actions require HA, networking, and TV ADB.
 
-Known cosmetic issue: the APK 1.7 help screen still displays “1.6”; the manifest and installed package version are 1.7. APK downgrades are not guaranteed. Never run two readers against the same remote or uninstall automatically to resolve a signature conflict.
+APK 1.7.1 derives the help title from the installed package version, fixing the old 1.6 title. See [button/volume review](docs/REVIEW-2026-11-09.md) for the new function-specific editor, one-point volume option and TV-bar limitations. APK downgrades are not guaranteed. Never run two readers against the same remote or uninstall automatically to resolve a signature conflict.
 
 ### Development and licence
 
@@ -103,11 +103,11 @@ Dieses Repository in **HACS → Benutzerdefinierte Repositories → Integration*
 
 ### Vorabversion und Grenzen
 
-Integration **0.5.0**, TV-App **1.7 / versionCode 8**. Der erste öffentliche Release ist eine **Vorabversion**. Beide Versionen sind am Testaufbau installiert; App-Einzel/Lang für Jellyfin/Twitch wurde vom Nutzer bestätigt. Lautstärke kurz/halten/loslassen ist unter HA 0.5.0 mit alter APK 1.6 bestätigt, nach APK 1.7 noch nicht erneut ausdrücklich geprüft. Doppel-, HA-Gesten-, Ausfall-, Neustart- und Rücknahmetests sowie genaue Zeitgrenzen bleiben offen.
+Lokaler Patch **0.5.1**, TV-App **1.7.1 / versionCode 9**, am eigenen Testaufbau installiert, ohne neuen getaggten Release. Öffentlicher Vorabrelease bleibt **0.5.0 / 1.7**; Testaufbau jetzt **0.5.1 / 1.7.1**; App-Einzel/Lang für Jellyfin/Twitch wurde vom Nutzer bestätigt. Lautstärke kurz/halten/loslassen ist unter HA 0.5.0 mit alter APK 1.6 bestätigt, nach APK 1.7 noch nicht erneut ausdrücklich geprüft. Doppel-, HA-Gesten-, Ausfall-, Neustart- und Rücknahmetests sowie genaue Zeitgrenzen bleiben offen.
 
 Doppel: 350 ms nach Loslassen; lang: einmal nach 750 ms. Bei Mehrfachbelegung kann Einzel verzögert reagieren. Power und Lautstärke bleiben reserviert. Unterschiedliche Eingabegeräte werden nicht automatisch zusammengeführt. Lokale App-Ziele funktionieren nach Einrichtung ohne HA; Lautstärke und HA-Aktionen benötigen HA, Netzwerk und TV-ADB.
 
-Bekannter kosmetischer Fehler: APK 1.7 zeigt im Anleitungstitel noch „1.6“. Ein APK-Downgrade ist nicht garantiert. Niemals zwei Leser gleichzeitig betreiben oder bei Signaturkonflikten automatisch deinstallieren.
+APK 1.7.1 liest den Anleitungstitel aus der Paketversion und korrigiert den alten Titel 1.6. [Tasten-/Lautstärkeprüfung](docs/REVIEW-2026-11-09.md): getrennte Funktionsdialoge, Einerschritte und Grenzen des TV-Balkens. Ein APK-Downgrade ist nicht garantiert. Niemals zwei Leser gleichzeitig betreiben oder bei Signaturkonflikten automatisch deinstallieren.
 
 [Prüfstand](docs/PRUEFUNG.md) · [Hardwaretest](docs/HARDWARETEST.md) · [APK bauen](docs/BUILD.md) · [Projektstand](docs/STATUS.md)
 

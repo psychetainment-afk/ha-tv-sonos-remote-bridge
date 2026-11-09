@@ -75,22 +75,14 @@
           "host": "TV-Adresse",
           "port": "ADB-Port",
           "target": "Lautstärkeziel",
-          "device_name": "Eingabegerät"
-        }
+          "device_name": "Eingabegerät",
+          "volume_step": "Schrittweite in Prozentpunkten (0 = Gerätestandard, 1 = fein)"
+        },
+        "description": "1 verwendet absolute Lautstärke in 1-Prozentpunkt-Schritten, 0 bewahrt den bisherigen Gerätestandard. Sonos: Standard 2, Minimum 1; kleinere Werte als Sonos-Stufe 1 sind nicht darstellbar. Kein TV-Balkenabgleich: Der TV zeigt seinen eigenen Ausgang, nicht den Sonos-Pegel. Echten Pegel und Stummstatus zeigt die Ziel-Entität; auch als Attribute am Verbindungssensor."
       },
       "learn": {
         "title": "Taste lernen",
         "description": "Jetzt innerhalb von 60 Sekunden eine Taste drücken und loslassen, danach bestätigen. HA-Aktionen bleiben während der Erfassung aus; bestehende lokale TV-App-Aktionen können weiterhin starten. Bei unbekannten Geräten können auch deren Originalaktionen reagieren."
-      },
-      "binding": {
-        "title": "Taste {code} · {press}",
-        "description": "Wähle „TV-App öffnen“ und eine installierte App aus der Liste oder „Home-Assistant-Aktionen“ und die gewünschte Aktion. „HA-Ereignis“ ist für eigene Automationen. Die App-Liste benötigt TV-App 1.7; Paketnamen sind nur eine zusätzliche Experteneingabe. Speichern ersetzt die gesamte TV-App-Belegung. Die TV-Originalaktion wird nur unterdrückt, wenn Android die Taste an die Bedienungshilfe weitergibt. Die gewählte Druckart wird separat gespeichert. „Diese Druckart entfernen“ lässt andere Druckarten erhalten. Doppel-/Langdruck erfordert die aktuelle TV-App.",
-        "data": {
-          "name": "Name",
-          "kind": "Funktion",
-          "package": "Installierte Ziel-App (nur TV-App öffnen)",
-          "actions": "HA-Aktionen (nur action)"
-        }
       },
       "remove": {
         "title": "Belegung entfernen",
@@ -100,7 +92,7 @@
       },
       "helper": {
         "title": "TV-App",
-        "description": "Installation schreibt die mitgelieferte TV-App 1.7 auf den TV und öffnet sie. Anschließend dort die Bedienungshilfe aktivieren. Ohne Installationsauswahl werden nur Belegungen übertragen. Beides ersetzt die bisherige App-Belegung; ein Downgrade ist nicht garantiert. Bei Signaturkonflikt wird nie automatisch deinstalliert.",
+        "description": "Installation schreibt die mitgelieferte TV-App 1.7.1 auf den TV und öffnet sie. Anschließend dort die Bedienungshilfe aktivieren. Ohne Installationsauswahl werden nur Belegungen übertragen. Beides ersetzt die bisherige App-Belegung; ein Downgrade ist nicht garantiert. Bei Signaturkonflikt wird nie automatisch deinstalliert.",
         "data": {
           "install": "Mitgelieferte TV-App installieren/aktualisieren"
         }
@@ -133,6 +125,58 @@
         "data": {
           "press": "Druckart"
         }
+      },
+      "function": {
+        "title": "Funktion auswählen",
+        "description": "HA-Aktion: führt direkt einen Befehl an der gewählten Entität aus, z. B. Licht umschalten oder Szene aktivieren. HA-Ereignis: meldet nur den Tastendruck; eine eigene Automation muss darauf reagieren. TV-App: öffnet lokal eine App. Nach Weiter erscheinen ausschließlich passende Felder.",
+        "data": {
+          "kind": "Funktion"
+        }
+      },
+      "action": {
+        "title": "Aktion auswählen",
+        "description": "Zuerst Aktion auswählen, dann im nächsten Schritt die passende Ziel-Entität. Für Helligkeit, mehrere Aktionen, Geräte, Bereiche oder YAML „Erweiterte Aktionsfolge“ wählen. Beim Bearbeiten bestehender Aktionen ist die erweiterte Folge vorausgewählt, damit alle Parameter erhalten bleiben.",
+        "data": {
+          "action": "Aktion"
+        }
+      },
+      "binding_event": {
+        "title": "Taste {code} · {press}",
+        "description": "Sendet ausschließlich das Ereignis `{event}` mit `button` = Bezeichnung, `scan_code` = {code}, `press` = {press} und `entry_id`. Es wird keine Entität geschaltet. Dazu eine separate HA-Automation mit Ereignisauslöser anlegen; für direktes Schalten stattdessen HA-Aktion wählen.",
+        "data": {
+          "name": "Bezeichnung des Tastendrucks"
+        }
+      },
+      "binding_action": {
+        "title": "Taste {code} · {press}",
+        "description": "Taste {code} ({press}) führt **{action}** direkt für die unten gewählten Ziel-Entitäten aus. Zusätzlich wird das Tastenereignis gesendet: keine zweite Automation mit gleicher Wirkung verwenden. Speichern überträgt alle Belegungen.",
+        "data": {
+          "name": "Bezeichnung des Tastendrucks",
+          "entity_id": "Ziel-Entitäten"
+        }
+      },
+      "binding_app": {
+        "title": "Taste {code} · {press}",
+        "description": "Öffnet die gewählte TV-App lokal. Speichern überträgt alle Belegungen. Der TV muss eingeschaltet und die Bedienungshilfe aktiv sein; ursprüngliche TV-Aktionen werden nur bei erreichbaren Tasten unterdrückt.",
+        "data": {
+          "name": "Bezeichnung des Tastendrucks",
+          "package": "Ziel-App"
+        }
+      },
+      "binding_none": {
+        "title": "Belegung entfernen",
+        "description": "Entfernt nur {press} der Taste {code}; andere Druckarten bleiben erhalten.",
+        "data": {
+          "name": "Bezeichnung des Tastendrucks"
+        }
+      },
+      "binding_sequence": {
+        "title": "Taste {code} · {press}",
+        "description": "Diese Aktionsfolge wird bei Taste {code} ({press}) direkt ausgeführt. Im Editor Aktion und deren Ziel auswählen; zusätzliche Parameter wie Helligkeit sind dort möglich. Auch hier wird das Tastenereignis gesendet: keine zweite Automation mit gleicher Wirkung verwenden. Speichern überträgt alle Belegungen.",
+        "data": {
+          "name": "Bezeichnung des Tastendrucks",
+          "actions": "Aktionsfolge"
+        }
       }
     },
     "error": {
@@ -146,7 +190,7 @@
       "empty_action": "Mindestens eine Home-Assistant-Aktion hinzufügen.",
       "invalid_action": "Die Home-Assistant-Aktionsfolge ist ungültig.",
       "helper_failed": "TV-App-Vorgang fehlgeschlagen. Zuerst die mitgelieferte App installieren und ADB freigeben. Bestehende App-Daten werden nie automatisch deinstalliert. Nach Wiederverbindung erneut versuchen.",
-      "app_list_unavailable": "App-Liste nicht verfügbar. TV eingeschaltet lassen und unter „TV-App einrichten“ App 1.7 installieren/aktualisieren. Danach diesen Schritt neu öffnen. HA-Aktionen und manuelle Paketnamen bleiben möglich.",
+      "app_list_unavailable": "App-Liste nicht verfügbar. TV eingeschaltet lassen und unter „TV-App einrichten“ App 1.7.1 installieren/aktualisieren. Danach diesen Schritt neu öffnen. HA-Aktionen und manuelle Paketnamen bleiben möglich.",
       "detection_timeout": "Kein eindeutiges Leiser-Signal erkannt. Erkennung erneut starten oder Eingang manuell auswählen.",
       "detection_ambiguous": "Mehrere Eingänge reagieren. Bitte Eingang manuell auswählen und einzeln testen.",
       "mixed_gesture_targets": "Pro Taste entweder TV-Apps oder HA-Aktionen/Ereignisse. Entferne zuerst die anderen Belegungen dieser Taste."
@@ -164,8 +208,8 @@
   "selector": {
     "binding_kind": {
       "options": {
-        "event": "HA-Ereignis",
-        "action": "Home-Assistant-Aktionen",
+        "event": "HA-Ereignis für eigene Automation",
+        "action": "HA-Aktion direkt ausführen",
         "app": "TV-App öffnen",
         "none": "Diese Druckart entfernen"
       }
@@ -175,6 +219,24 @@
         "single": "Einzeldruck",
         "double": "Doppeldruck",
         "long": "Langdruck"
+      }
+    },
+    "direct_action": {
+      "options": {
+        "sequence": "Erweiterte Aktionsfolge (Parameter, Geräte, Bereiche, YAML)",
+        "light.turn_on": "Licht: einschalten / aktivieren",
+        "light.turn_off": "Licht: ausschalten",
+        "light.toggle": "Licht: umschalten",
+        "switch.turn_on": "Schalter: einschalten / aktivieren",
+        "switch.turn_off": "Schalter: ausschalten",
+        "switch.toggle": "Schalter: umschalten",
+        "scene.turn_on": "Szene: einschalten / aktivieren",
+        "script.turn_on": "Skript: einschalten / aktivieren",
+        "cover.open_cover": "Rollladen: öffnen",
+        "cover.close_cover": "Rollladen: schließen",
+        "cover.stop_cover": "Rollladen: stoppen",
+        "media_player.media_play_pause": "Medien: Wiedergabe / Pause",
+        "media_player.media_stop": "Medien: stoppen"
       }
     }
   },

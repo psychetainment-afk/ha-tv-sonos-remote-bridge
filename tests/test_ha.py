@@ -170,6 +170,7 @@ async def test_action_runs_in_ha_and_volume_service(hass):
     runtime = Runtime(hass, entry, None)
     await runtime.key(166)
     await asyncio.gather(*tasks)
+    runtime.config["volume_step"] = 0
     await runtime.send("up")
     assert calls == [{"value": "pressed"}, {"entity_id": "media_player.test"}]
     await runtime.stop()

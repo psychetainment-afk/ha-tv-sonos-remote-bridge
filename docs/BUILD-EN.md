@@ -15,7 +15,7 @@ Set TVBRIDGE_KEYSTORE_PASSWORD in your process environment securely; never commi
   -KeyAlias 'tvbridge'
 ```
 
-The script compiles Java, generates DEX, packages/aligns/signs the APK and verifies its signature. It creates a unique ignored build directory and dist/tv-sonos-remote-bridge-1.7.apk. It does not install the app. Generated output is not claimed to be byte-for-byte reproducible.
+The script compiles Java, generates DEX, packages/aligns/signs the APK and verifies its signature. It creates a unique ignored build directory and dist/tv-sonos-remote-bridge-1.7.1.apk. It does not install the app. Generated output is not claimed to be byte-for-byte reproducible.
 
 The release APK is signed with the project's existing private key. An independently signed build cannot directly update that installation; uninstalling would lose app settings and accessibility authorization. Keep private keys/passwords outside Git. Future changed APK releases must increase versionCode and retain the project signer for direct updates. APK downgrades are not guaranteed.
 
